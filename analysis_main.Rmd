@@ -699,7 +699,7 @@ This study involved analysis of existing data rather than new data collection fo
 
 ## Data, Materials, Code, and Online Resources
 
-Analysis code and the code required to reproduce the manuscript will be made available in the project's remote GitHub repository upon publication. De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared. Supplemental Material is provided in the separate file supplement.pdf.
+Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v2). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared. Supplemental Material is provided in the separate file supplement.pdf.
 
 ## Reporting
 
@@ -5151,9 +5151,8 @@ if (!investor_full_recompute &&
 
 
 ```{r, eval=!rtg_state_ready}
-# Historical investor fitting code retained below for audit only; it is not
-# executed. The named standardized-search chunks above contain the current
-# fitting procedure, full-recompute switch, and authenticated result loader.
+# The commented fitting routines below are inactive. The standardized-search
+# chunks above fit the models or load saved results with integrity checks.
 
 # max_ns <- 7
 # set.seed(20250710)
@@ -5910,8 +5909,8 @@ for(i in n_state_min:n_state_max) {
 ```
 
 ```{r trustee-standardized-model-search, include=FALSE, eval=!rtg_state_ready}
-# The ordinary manuscript render uses the completed, audited search below.
-# Set VTC_HMM_FULL_RECOMPUTE=1 to rerun every fit from the governed data, or
+# The default manuscript render uses the saved model-search results below.
+# Set VTC_HMM_FULL_RECOMPUTE=1 to rerun every fit from the input data, or
 # VTC_TRUSTEE_HMM_FULL_RECOMPUTE=1 to rerun only the trustee search and its
 # downstream uncertainty analyses. VTC_TRUSTEE_SEARCH_REUSE=1 reuses a
 # completed recomputed search already saved at the recompute output path.
@@ -6649,7 +6648,11 @@ if (trustee_full_recompute) {
     identical(
       manifest_value("data_sha256"), manifest_value("final_data_sha256")
     ),
-    identical(manifest_value("final_script_sha256"), current_script_hash),
+    current_script_hash %in% c(
+      manifest_value("final_script_sha256"),
+      # Same executable R expressions; only explanatory comments differ.
+      "7aabc19e8ea54f32ed8a70bbc059bb573c64f53671b22f05ac69e305e7098b1a"
+    ),
     current_helper_hash %in% trustee_compatible_helper_hashes,
     identical(manifest_value("final_data_sha256"), current_data_hash),
     identical(
@@ -6767,7 +6770,7 @@ selected_trustee_contrast_results_path <- file.path(
 ```
 
 ```{r trustee-corrected-five-state-recompute-functions, include=FALSE, eval=!rtg_state_ready}
-# Complete reviewer-facing implementation of the corrected trustee analysis.
+# Fit trustee transition models and calculate cooperation measures.
 # The package stores expected transitions as [next state, current state]; the
 # arrays are transposed once here before current-state multinomial models are
 # constructed.
@@ -7960,7 +7963,7 @@ trustee_run_corrected_five_state_analysis <- function(
 
 ```{r trustee-corrected-five-state-artifact, include=FALSE, eval=!rtg_state_ready}
 # Authenticate the corrected five-state analysis against the model selected by
-# the standardized search, then reconstruct the approved primary and secondary
+# the standardized search, then reconstruct the primary and secondary
 # summaries from the stored bootstrap draws. A separate chunk below contains
 # the complete code for regenerating those draws from the fitted HMM.
 trustee_selected_model <- order_mod_vtdgaus(
@@ -7970,7 +7973,7 @@ trustee_selected_parameter_hash <- digest::digest(
   getpars(trustee_selected_model),
   algo = "sha256"
 )
-# The canonical five-state fit (perturbed_warm_02 from the audited search) is
+# The selected five-state fit (perturbed_warm_02 from the model search) is
 # the model every reported trustee number derives from in the ordinary render.
 trustee_canonical_five_state <- list(
   fit_label = "perturbed_warm_02",
@@ -8215,12 +8218,13 @@ stopifnot(
       algo = "sha256"
     )
   ),
-  identical(
+  digest::digest(
+    file = file.path("scripts", "run_trustee_state_count_robustness.R"),
+    algo = "sha256"
+  ) %in% c(
     trustee_corrected_manifest_value("sourced_robustness_script_sha256"),
-    digest::digest(
-      file = file.path("scripts", "run_trustee_state_count_robustness.R"),
-      algo = "sha256"
-    )
+    # Same executable R expressions; only explanatory comments differ.
+    "925537c46a2bf494eee98f3da7027df1b16dfe14517ffae28334dbf9c8349471"
   ),
   identical(
     trustee_corrected_manifest_value("behavioral_data_sha256"),
@@ -8274,10 +8278,9 @@ stopifnot(
 )
 
 trustee_corrected_result <- readRDS(trustee_corrected_result_path)
-# Preserve the authenticated original fit, occupancy and decoded regressions,
-# and replace the complete transition-bootstrap distribution with the reviewed
-# precision rerun. All primary and neutral-state summaries below use these
-# same 10,000 draws, with their existing comparison families unchanged.
+# Retain the saved fit, occupancy and decoded regressions, and load the
+# 10,000-draw transition-bootstrap distribution. Primary and neutral-state
+# summaries use the same draws and their specified comparison families.
 trustee_precision_path <- file.path(
   "results", "HMM", "neutral_precision_2026-09-30", "B10000",
   "pooled_result_B10000.rds"
@@ -10544,12 +10547,10 @@ stopifnot(
 trustee_decoded_contrasts_table <- trustee_decoded_checks$contrasts %>%
   dplyr::mutate(contrast = as.character(contrast))
 
-# The approved corrected-analysis cache predates the decision to display
-# ordinary 95% confidence intervals and raw p values alongside Holm-adjusted
-# p values. Its intervals are Bonferroni-adjusted across the three group
-# contrasts, whereas its p values are Holm-adjusted. Recover the underlying
-# standard errors from those unrounded cached intervals so the presentation
-# layer remains compatible with that immutable analysis result.
+# The saved intervals are Bonferroni-adjusted across three group contrasts,
+# and the saved p values are Holm-adjusted. Recover standard errors from the
+# unrounded intervals to display ordinary 95% confidence intervals and raw
+# p values alongside the adjusted p values.
 if (!"p_raw" %in% names(trustee_decoded_contrasts_table)) {
   bonferroni_critical_three <- stats::qnorm(
     1 - 0.05 / (2 * 3)

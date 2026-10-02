@@ -1,5 +1,5 @@
 {
-  "version": "submission-v1",
+  "version": "submission-v2",
   "scope": "code-only; no participant data, fitted models or private Git history",
   "files": [
     {
@@ -9,13 +9,13 @@
     },
     {
       "path": "CITATION.txt",
-      "bytes": 480,
-      "sha256": "fd6aad9cb16eadfc9fede245f6218e821e3b7e213178fde4b79fd31ad0979df7"
+      "bytes": 438,
+      "sha256": "7ad99afcb9d3969a7acaa1e5ff1e72ba2b6673332dfd68a1cdc6ea192c923e4e"
     },
     {
       "path": "Data/README.md",
-      "bytes": 1473,
-      "sha256": "319ce20aa868315c7faae770864a154b2f2077f22ad76cb9ca47efd7be71ec24"
+      "bytes": 1360,
+      "sha256": "1c22c5411aaa8c690e35016399fe6cd7ca9c6031c3adc34478e53f30cf25a22d"
     },
     {
       "path": "LICENSE_STATUS.txt",
@@ -24,18 +24,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 5588,
-      "sha256": "e1a306919e8e84f2e52efe2d7983bf56dca187b497d83529e21e80e9c2af338a"
+      "bytes": 5546,
+      "sha256": "b8124d2e785e9e04cfd4230d67e2c093266fc217a9ae85e906f426897a6b5ff0"
     },
     {
       "path": "VTC_RTG_analysis.Rmd",
-      "bytes": 1249,
-      "sha256": "e5ddab5bc0a025cc5fc6ac2b4995de31fb945dc894f1abbeb13e2e84d3d4f068"
+      "bytes": 1207,
+      "sha256": "e1a7f200282b1e6d21a3897ac8b5804b0b3b1d65412a0171deb1b5c1dd1cdb0b"
     },
     {
       "path": "analysis_main.Rmd",
-      "bytes": 464628,
-      "sha256": "0571e34f59e8f504e1c5f0bbd3cc258c4ef1137adb3579a6a0ed8b8238b3881f"
+      "bytes": 464580,
+      "sha256": "a904c0dd7b0bc24eb70c1bec4517dea875162024ca8577aeffddfd97d7970340"
     },
     {
       "path": "apa.csl",
@@ -124,8 +124,8 @@
     },
     {
       "path": "scripts/run_trustee_standardized_model_search.R",
-      "bytes": 32007,
-      "sha256": "69eabeea45d525ef720f5735c1b5d8b8bc507d916c7c26a975949c99f25afcbe"
+      "bytes": 31961,
+      "sha256": "7aabc19e8ea54f32ed8a70bbc059bb573c64f53671b22f05ac69e305e7098b1a"
     },
     {
       "path": "scripts/run_trustee_state5_neutral_state2.R",
@@ -134,8 +134,8 @@
     },
     {
       "path": "scripts/run_trustee_state_count_robustness.R",
-      "bytes": 40877,
-      "sha256": "7365220f0f9685f32728326ac1b2a85f024e9d483ebd2780d972819a45b235d7"
+      "bytes": 40798,
+      "sha256": "925537c46a2bf494eee98f3da7027df1b16dfe14517ffae28334dbf9c8349471"
     },
     {
       "path": "scripts/run_trustee_state_count_sensitivity.R",
@@ -154,8 +154,8 @@
     },
     {
       "path": "supplement.Rmd",
-      "bytes": 79675,
-      "sha256": "88b8785f7529b270184de7b3aff1e0c3f9624a3d9c8e0fb234fa0ac57b13c0ef"
+      "bytes": 79695,
+      "sha256": "6467fccb7123a2500ecb0d1f31d82f36a1675154b5f9fd5f8db5556315c3117c"
     },
     {
       "path": "tests/test_bootstrap_rules.R",

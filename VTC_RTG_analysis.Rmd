@@ -1,5 +1,5 @@
 ---
-title: "Distinct Reciprocity Phenotypes in Psychiatric Disorders: Adaptation, Maintenance, and Repair Across Repeated Social Exchange"
+title: "Beyond Behavioural Averages: Clinical Differences in Trust and Reciprocity Dynamics"
 author: "Ismail Guennouni^1,2,3^, Tobias Nolte^4,5^, Maarten Speekenbrink^6^, Georgia Koppe^1,2,3^, Stephen Pilling^4,8^, Judy Leibowitz^8^, Read Montague^7^, and Peter Fonagy^4,5^"
 output:
   bookdown::pdf_document2:

@@ -122,7 +122,6 @@ expected_transitions_xi <- function(fit, data_df, id_col = "subject_ID") {
   # depmixS4 stores trDens and forwardbackward()$xi as [to_state, from_state],
   # not [from_state, to_state]. Use the package's own forward-backward result
   # and transpose each time slice before building the multinomial responses.
-  # The earlier manuscript helper treated the array in the opposite direction.
   fb <- depmixS4::forwardbackward(fit, return.all = TRUE)
   xi_to_from <- fb$xi
   if (!identical(dim(xi_to_from), c(nrow(data_df), k, k))) {

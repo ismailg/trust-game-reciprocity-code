@@ -1,12 +1,12 @@
 # Trust Game analysis code
 
-Code accompanying **Distinct Reciprocity Phenotypes in Psychiatric Disorders: Adaptation, Maintenance, and Repair Across Repeated Social Exchange**. Submission version: 2 October 2026.
+Code accompanying **Beyond Behavioural Averages: Clinical Differences in Trust and Reciprocity Dynamics**. Submission version: 2 October 2026.
 
 The package contains analysis code, manuscript source, run instructions, and software versions. Participant data and fitted models are excluded. Reproducing the empirical results requires authorised access to `full_RTG_data.csv` and `demographics.csv`; see [Data/README.md](Data/README.md).
 
 Contact: Ismail Guennouni, ismail.guennouni@iwr.uni-heidelberg.de. Manuscript authors are listed in [CITATION.txt](CITATION.txt).
 
-The fixed submission snapshot is the `submission-v1` release. Later updates to the repository may differ.
+The fixed submission snapshot is the `submission-v2` release. Later updates to the repository may differ.
 
 ## Run the analyses
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
 
 # Apply one fitting policy to every trustee diagnosis-transition HMM from two
-# through seven states. This is an audit runner; the final reviewer-facing code
-# is also placed in analysis_main.Rmd.
+# through seven states. The manuscript entry point is analysis_main.Rmd.
 
 suppressPackageStartupMessages({
   library(depmixS4)
