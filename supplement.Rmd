@@ -102,7 +102,7 @@ Sequential model comparisons:
 
 #### Random Effects Structure
 
-Random-effects structures were specified by model family and retained only when they yielded acceptable fits. Investor LMMs included participant-specific intercepts and slopes for lagged net return. The trustee LMM hierarchy used participant-specific intercepts only in the retained nested comparisons, because the interaction models needed for the likelihood-ratio hierarchy were not retained as acceptable random-slope fits. Investor tactical GLMMs included participant-specific intercepts and slopes for lagged fairness gap. Trustee tactical GLMMs first attempted participant-specific slopes for current investment and were simplified to random intercepts when the slope specification was singular or produced convergence warnings; the retained structure for each model is reported with the trustee tactical results.
+Random-effects structures were specified by model family and retained only when they yielded acceptable fits. Investor LMMs included participant-specific intercepts and slopes for lagged net return. The trustee LMM hierarchy used participant-specific intercepts only in the retained nested comparisons, because the interaction models needed for the likelihood-ratio hierarchy were not retained as acceptable random-slope fits. Uncorrelated intercept-and-slope variants were not additionally evaluated for the trustee LMMs. Investor tactical GLMMs included participant-specific intercepts and slopes for lagged fairness gap. Trustee tactical GLMMs first attempted participant-specific slopes for current investment and were simplified to random intercepts when the slope specification was singular or produced convergence warnings; the retained structure for each model is reported with the trustee tactical results.
 
 #### Contrast Coding
 
@@ -173,11 +173,21 @@ $$P(y_t = x | s_t = k) = \frac{\Phi(x + 0.5; \mu_k, \sigma_k) - \Phi(x - 0.5; \m
 
 Let $s_t=i$ denote the current state, $s_{t+1}=j$ the next state, and $G$ the diagnostic group. For trustees, the transition predictor was the partner's investment, $I_{t+1}$, on the next round:
 
-$$P(s_{t+1} = j | s_t = i, I_{t+1}, G) = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} I_{t+1} + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot I_{t+1}\right)}{\sum_{j'} \exp(\cdots)}$$
+$$
+\begin{aligned}
+&P(s_{t+1} = j | s_t = i, I_{t+1}, G)\\
+&\quad = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} I_{t+1} + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot I_{t+1}\right)}{\sum_{j'} \exp(\cdots)}
+\end{aligned}
+$$
 
 For investors, the transition predictor was the participant's net earnings on the current round, $\text{PnL}_t = \text{return}_t - \text{investment}_t$:
 
-$$P(s_{t+1} = j | s_t = i, \text{PnL}_t, G) = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} \text{PnL}_t + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot \text{PnL}_t\right)}{\sum_{j'} \exp(\cdots)}$$
+$$
+\begin{aligned}
+&P(s_{t+1} = j | s_t = i, \text{PnL}_t, G)\\
+&\quad = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} \text{PnL}_t + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot \text{PnL}_t\right)}{\sum_{j'} \exp(\cdots)}
+\end{aligned}
+$$
 
 Trustee models used CC as the reference and included BPD and AD indicators. Investor HMMs included only CC and BPD participants, with CC as the reference. The coefficients describe baseline transition probabilities, the effect of the trial-level predictor, group differences, and group-by-predictor differences. The denominator makes the probabilities across all possible next states sum to one.
 
@@ -232,8 +242,9 @@ The winning Investor LMM (two-way interaction model) is specified as:
 
 $$
 \begin{aligned}
-\text{Investment}_{ij} &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} + \beta_3 \text{LagNetReturn}_{ij} \\
-&\quad + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) + \beta_5 (\text{Group}_j \times \text{LagNetReturn}_{ij}) \\
+\text{Investment}_{ij} &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} \\
+&\quad + \beta_3 \text{LagNetReturn}_{ij} + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) \\
+&\quad + \beta_5 (\text{Group}_j \times \text{LagNetReturn}_{ij}) \\
 &\quad + u_{0j} + u_{1j} \text{LagNetReturn}_{ij} + \epsilon_{ij}
 \end{aligned}
 $$
@@ -256,8 +267,9 @@ The Investor Tactical GLMMs (Responsiveness and Retaliation) are specified as:
 
 $$
 \begin{aligned}
-\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{LagFairGap}_{ij} + \beta_2 \text{PrevStake}_{ij} \\
-&\quad + \beta_3 \text{ns}(\text{Round}_{ij})_1 + \beta_4 \text{ns}(\text{Round}_{ij})_2 + \beta_5 \text{Group}_j \\
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{LagFairGap}_{ij} \\
+&\quad + \beta_2 \text{PrevStake}_{ij} + \beta_3 \text{ns}(\text{Round}_{ij})_1 \\
+&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_2 + \beta_5 \text{Group}_j \\
 &\quad + u_{0j} + u_{1j} \text{LagFairGap}_{ij}
 \end{aligned}
 $$
@@ -301,18 +313,21 @@ The winning Trustee LMM (two-way interaction model) is specified as:
 
 $$
 \begin{aligned}
-\text{logit}(\text{ReturnRatio}_{ij}) &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} + \beta_3 \text{Investment}_{ij} \\
-&\quad + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) + \beta_5 (\text{Group}_j \times \text{Investment}_{ij}) \\
+\text{logit}(\text{ReturnRatio}_{ij}) &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} \\
+&\quad + \beta_3 \text{Investment}_{ij} + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) \\
+&\quad + \beta_5 (\text{Group}_j \times \text{Investment}_{ij}) \\
 &\quad + \beta_6 (\text{Round}_{ij} \times \text{Investment}_{ij}) \\
 &\quad + u_{0j} + \epsilon_{ij}
 \end{aligned}
 $$
 
 ```{r supp-trustee-lmm-coefs, include=TRUE}
-supp_apa(tab_trust,
-         caption = "Trustee LMM fixed effects (REML).",
-         label = "supp-trustee-lmm-coefs",
-         font_size = 9)
+tab_trust %>%
+  format_p_cols() %>%
+  setNames(c("Term", "Estimate", "Std Error", "95% CI Lower", "95% CI Upper", "Statistic", "p-value")) %>%
+  supp_apa(caption = "Trustee LMM fixed effects (REML).",
+           label = "supp-trustee-lmm-coefs",
+           font_size = 9)
 ```
 
 ### Trustee Tactical GLMMs
@@ -322,8 +337,10 @@ The Trustee Tactical GLMMs (Coaxing, Encouragement, Cooperation Pick-up) shared 
 
 $$
 \begin{aligned}
-\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
-&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 + \beta_6 \text{Group}_j \\
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} \\
+&\quad + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
+&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 \\
+&\quad + \beta_6 \text{Group}_j \\
 &\quad + u_{0j}
 \end{aligned}
 $$
@@ -332,8 +349,10 @@ Coaxing and encouragement retained participant-specific random intercepts only. 
 
 $$
 \begin{aligned}
-\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
-&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 + \beta_6 \text{Group}_j \\
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} \\
+&\quad + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
+&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 \\
+&\quad + \beta_6 \text{Group}_j \\
 &\quad + u_{0j} + u_{1j} \text{CurrInvest}_{ij}
 \end{aligned}
 $$
@@ -1781,8 +1800,9 @@ trustee_sensitivity_compact_table <-
         "10,000 successful bootstrap samples per model."
       ),
       paste(
-        "Occupancy p values were adjusted across three group comparisons",
-        "within each state count. Repair and retention p values were adjusted",
+        "Occupancy confidence intervals are Bonferroni-adjusted and p values",
+        "Holm-adjusted across three group comparisons within each state count.",
+        "Repair and retention p values were adjusted",
         "together across 18 comparisons; long-run cooperation p values were",
         "adjusted across nine comparisons."
       ),

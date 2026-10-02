@@ -6,7 +6,7 @@ The package contains analysis code, manuscript source, run instructions, and sof
 
 Contact: Ismail Guennouni, ismail.guennouni@iwr.uni-heidelberg.de. Manuscript authors are listed in [CITATION.txt](CITATION.txt).
 
-The fixed submission snapshot is the `submission-v3` release. Later updates to the repository may differ.
+The fixed submission snapshot is the `submission-v4` release. Later updates to the repository may differ.
 
 ## Run the analyses
 

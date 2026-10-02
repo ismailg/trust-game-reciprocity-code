@@ -1,5 +1,5 @@
 {
-  "version": "submission-v3",
+  "version": "submission-v4",
   "scope": "code-only; no participant data, fitted models or private Git history",
   "files": [
     {
@@ -10,7 +10,7 @@
     {
       "path": "CITATION.txt",
       "bytes": 438,
-      "sha256": "e143edfc74101aa417d9b9aefa099ac8049f2543c77cd7d505dc3e3e116930a9"
+      "sha256": "4b0a53195fa6eb50aaffbc2663c48a85a61718d0551f024da2039a7c878779aa"
     },
     {
       "path": "Data/README.md",
@@ -25,7 +25,7 @@
     {
       "path": "README.md",
       "bytes": 5006,
-      "sha256": "b8e9e56f3b19c6967b0b962568a2db041a5296b4b2dd49ddc3f18416cb659c05"
+      "sha256": "66f9dc44d39040d0307e21c537378ccdaa74d8da6e7b27934c162a185b67a63f"
     },
     {
       "path": "VTC_RTG_analysis.Rmd",
@@ -34,8 +34,8 @@
     },
     {
       "path": "analysis_main.Rmd",
-      "bytes": 464580,
-      "sha256": "63576c78f82be25689f79c3b4db46fc29c1692aca82178bba5edfcf07244246a"
+      "bytes": 464719,
+      "sha256": "99ef3bdccb66ba3a45a2911742d8c21860331920b53a226eeec72823aaa6c7f3"
     },
     {
       "path": "apa.csl",
@@ -69,8 +69,8 @@
     },
     {
       "path": "references.bib",
-      "bytes": 26667,
-      "sha256": "94edb912ea11bb6e3eb79109c6ac385acb435d6ac058d39f5a519e8b162ee654"
+      "bytes": 16431,
+      "sha256": "3f7eef314f3aaaa8d4ed2d48f1f48638d5bf009878d3adb38fad1b4d9d81e623"
     },
     {
       "path": "render.R",
@@ -154,8 +154,8 @@
     },
     {
       "path": "supplement.Rmd",
-      "bytes": 79695,
-      "sha256": "847ee626aa332ed258df569e02edf8586658aa9bf030a8fa2fd459f92233ea57"
+      "bytes": 80134,
+      "sha256": "a9ea07857f215c55f162dc42f56ca08af89aee68c6327be5bd7f43bb5e913986"
     },
     {
       "path": "tests/test_bootstrap_rules.R",
