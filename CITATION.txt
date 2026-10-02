@@ -5,4 +5,4 @@ Beyond Behavioural Averages: Clinical Differences in Trust and Reciprocity Dynam
 
 Code package version: 2026-10-02.
 Repository: https://github.com/ismailg/trust-game-reciprocity-code
-Submission snapshot: submission-v2.
+Submission snapshot: submission-v3.

@@ -6,7 +6,7 @@ The package contains analysis code, manuscript source, run instructions, and sof
 
 Contact: Ismail Guennouni, ismail.guennouni@iwr.uni-heidelberg.de. Manuscript authors are listed in [CITATION.txt](CITATION.txt).
 
-The fixed submission snapshot is the `submission-v2` release. Later updates to the repository may differ.
+The fixed submission snapshot is the `submission-v3` release. Later updates to the repository may differ.
 
 ## Run the analyses
 
@@ -72,18 +72,6 @@ The bootstrap varies transition counts and parameters while holding the fitted s
 - `output_map.csv`: code locations producing each main and supplementary table or figure.
 - `renv.lock` and `environment/`: software versions and setup instructions.
 - `RELEASE_MANIFEST.json` and `verify_package.py`: distributed file list and integrity checks.
-
-## Tests and verification
-
-These tests use invented values and require no participant data:
-
-```sh
-python3 -B tests/test_distribution.py
-Rscript tests/test_input_checks.R
-Rscript tests/test_bootstrap_rules.R
-```
-
-Verification of the 2 October 2026 submission version with restricted data reproduced all seven 10,000-draw bootstrap analyses and the manuscript outputs. Existing fitted models were reused after checking their inputs. Full model searches were not repeated, so the complete raw-data-only workflow has not been fully verified.
 
 ## Licence
 

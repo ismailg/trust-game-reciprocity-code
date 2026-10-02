@@ -699,7 +699,7 @@ This study involved analysis of existing data rather than new data collection fo
 
 ## Data, Materials, Code, and Online Resources
 
-Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v2). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared. Supplemental Material is provided in the separate file supplement.pdf.
+Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v3). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared. Supplemental Material is provided in the separate file supplement.pdf.
 
 ## Reporting
 

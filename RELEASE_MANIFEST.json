@@ -1,5 +1,5 @@
 {
-  "version": "submission-v2",
+  "version": "submission-v3",
   "scope": "code-only; no participant data, fitted models or private Git history",
   "files": [
     {
@@ -10,7 +10,7 @@
     {
       "path": "CITATION.txt",
       "bytes": 438,
-      "sha256": "7ad99afcb9d3969a7acaa1e5ff1e72ba2b6673332dfd68a1cdc6ea192c923e4e"
+      "sha256": "e143edfc74101aa417d9b9aefa099ac8049f2543c77cd7d505dc3e3e116930a9"
     },
     {
       "path": "Data/README.md",
@@ -24,8 +24,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 5546,
-      "sha256": "b8124d2e785e9e04cfd4230d67e2c093266fc217a9ae85e906f426897a6b5ff0"
+      "bytes": 5006,
+      "sha256": "b8e9e56f3b19c6967b0b962568a2db041a5296b4b2dd49ddc3f18416cb659c05"
     },
     {
       "path": "VTC_RTG_analysis.Rmd",
@@ -35,7 +35,7 @@
     {
       "path": "analysis_main.Rmd",
       "bytes": 464580,
-      "sha256": "a904c0dd7b0bc24eb70c1bec4517dea875162024ca8577aeffddfd97d7970340"
+      "sha256": "63576c78f82be25689f79c3b4db46fc29c1692aca82178bba5edfcf07244246a"
     },
     {
       "path": "apa.csl",
@@ -155,7 +155,7 @@
     {
       "path": "supplement.Rmd",
       "bytes": 79695,
-      "sha256": "6467fccb7123a2500ecb0d1f31d82f36a1675154b5f9fd5f8db5556315c3117c"
+      "sha256": "847ee626aa332ed258df569e02edf8586658aa9bf030a8fa2fd459f92233ea57"
     },
     {
       "path": "tests/test_bootstrap_rules.R",
