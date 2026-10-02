@@ -1,5 +1,5 @@
 {
-  "version": "submission-v4",
+  "version": "submission-v5",
   "scope": "code-only; no participant data, fitted models or private Git history",
   "files": [
     {
@@ -10,7 +10,7 @@
     {
       "path": "CITATION.txt",
       "bytes": 438,
-      "sha256": "4b0a53195fa6eb50aaffbc2663c48a85a61718d0551f024da2039a7c878779aa"
+      "sha256": "2201146f7811f9bb0d324617779049ae0d2942e0b927c943b1fc9044e0dcede8"
     },
     {
       "path": "Data/README.md",
@@ -25,7 +25,7 @@
     {
       "path": "README.md",
       "bytes": 5006,
-      "sha256": "66f9dc44d39040d0307e21c537378ccdaa74d8da6e7b27934c162a185b67a63f"
+      "sha256": "eca2bc1c44674133f83dc5c12fc9450717a685bf637fce159297cba9fb5350ca"
     },
     {
       "path": "VTC_RTG_analysis.Rmd",
@@ -35,7 +35,7 @@
     {
       "path": "analysis_main.Rmd",
       "bytes": 464719,
-      "sha256": "99ef3bdccb66ba3a45a2911742d8c21860331920b53a226eeec72823aaa6c7f3"
+      "sha256": "cf25c8f1167eb6453d3e8dc8a3c7dd17e4bd76e68ddd774f097bb5fa057f8530"
     },
     {
       "path": "apa.csl",
@@ -155,7 +155,7 @@
     {
       "path": "supplement.Rmd",
       "bytes": 80134,
-      "sha256": "a9ea07857f215c55f162dc42f56ca08af89aee68c6327be5bd7f43bb5e913986"
+      "sha256": "d4a09d74f79d5631c445560a9308027a4b1c3c3fa15f520b0589331b603b32b4"
     },
     {
       "path": "tests/test_bootstrap_rules.R",
