@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,15 +91,21 @@ class DistributionTests(unittest.TestCase):
         inputs.mkdir()
         for name in ("full_RTG_data.csv", "demographics.csv"):
             (inputs / name).write_text("invented\n")
-        archive = self.root / "archive"
-        (archive / "results" / "HMM").mkdir(parents=True)
-        (archive / "modsData").mkdir()
         work = self.root / "private-work"
-        result = subprocess.run([sys.executable, str(clone / "run_analysis.py"),
-            "--data-dir", str(inputs), "--work-dir", str(work), "--mode", "archived",
-            "--private-archive", str(archive), "--no-render"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        runner_spec = importlib.util.spec_from_file_location("release_runner", clone / "run_analysis.py")
+        runner = importlib.util.module_from_spec(runner_spec)
+        with patch.dict(sys.modules, {"verify_package": mod}):
+            runner_spec.loader.exec_module(runner)
+        # Exercise actual workspace copying; computation is outside this test.
+        argv = [str(clone / "run_analysis.py"), "--data-dir", str(inputs),
+                "--work-dir", str(work), "--mode", "fresh", "--no-render"]
+        with patch.object(sys, "argv", argv), patch.object(runner.subprocess, "run",
+                return_value=subprocess.CompletedProcess([], 0)) as command:
+            runner.main()
+        command.assert_called_once()
         self.assertTrue((work / "Data" / "full_RTG_data.csv").is_file())
+        self.assertEqual((work / "Data" / "full_RTG_data.csv").read_bytes(),
+                         (inputs / "full_RTG_data.csv").read_bytes())
         self.assertFalse((work / ".git").exists())
 
 

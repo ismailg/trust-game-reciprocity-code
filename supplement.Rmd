@@ -102,17 +102,15 @@ Sequential model comparisons:
 
 #### Random Effects Structure
 
-Random-effects structures were specified by model family and retained only when they yielded acceptable fits. Investor LMMs included participant-specific intercepts and slopes for lagged net return. The trustee LMM hierarchy used participant-specific intercepts only in the retained nested comparisons, because the interaction models needed for the likelihood-ratio hierarchy were not retained as acceptable random-slope fits. Uncorrelated intercept-and-slope variants were not additionally evaluated for the trustee LMMs. Investor tactical GLMMs included participant-specific intercepts and slopes for lagged fairness gap. Trustee tactical GLMMs first attempted participant-specific slopes for current investment and were simplified to random intercepts when the slope specification was singular or produced convergence warnings; the retained structure for each model is reported with the trustee tactical results.
+Random-effects structures were specified by model family and retained only when they yielded acceptable fits. All investor LMMs included participant-specific intercepts; models including lagged net return also included participant-specific slopes. The trustee LMM hierarchy used participant-specific intercepts only in the retained nested comparisons, because the interaction models needed for the likelihood-ratio hierarchy were not retained as acceptable random-slope fits. Uncorrelated intercept-and-slope variants were not additionally evaluated for the trustee LMMs. Investor tactical GLMMs included participant-specific intercepts and slopes for lagged fairness gap. Trustee tactical GLMMs first attempted participant-specific slopes for current investment and were simplified to random intercepts when the slope specification was singular or produced convergence warnings; the retained structure for each model is reported with the trustee tactical results.
 
 #### Contrast Coding
 
-During selection: Treatment contrasts (CC reference) for sequential model building.
-
-For reporting: Sum-to-zero contrasts for Type III ANOVA-style tests, ensuring main effects interpretable with interactions.
+The linear mixed-effects and trial-level event models used treatment contrasts, with CC as the reference, during fitting and coefficient reporting. Diagnostic-group comparisons were estimated with emmeans and adjusted as described in Methods.
 
 #### Effect-size Reporting
 
-We do not report standardised effect sizes, such as Cohen's *d* or partial $\eta^2$, for the mixed-effects models because variance partitioning in multilevel designs with random effects and interaction terms remains methodologically unsettled. There is no consensus on how variance should be apportioned between fixed and random components, and existing proposals, such as marginal and conditional $R^2$, may be misleading when random-effects structures are complex [@rights2019tying; @matuschek2017balancing].
+We report unstandardised coefficients and confidence intervals, supplemented by simple slopes and percentage changes, to show the magnitude and uncertainty of diagnostic contrasts. Measures of explained variance in multilevel models address a different question [@rights2019tying].
 
 ### S1.3 Bootstrap Algorithm for Trustee HMM Transition Dynamics
 
@@ -122,7 +120,7 @@ For the trustee HMM, we implemented an approximate, model-conditional transition
 
 First, we extracted probability-weighted current-to-next-state transition counts from the fitted HMM using the forward-backward algorithm. We then fitted a multinomial transition model for each starting state, including investment, diagnostic group, and their interaction.
 
-Before fitting these models, fractional transition counts were multiplied by 2,000 and rounded to whole counts. This preserved their relative weights while providing the counts used in simulation.
+Before fitting these models, fractional transition counts were multiplied by 2,000 and rounded to whole counts. For simulation, each row was included with a probability equal to its rounded row total divided by 2,000, capped at one. Each included row contributed one destination state sampled from the fitted transition probabilities.
 
 For each bootstrap sample, we:
 
@@ -138,7 +136,7 @@ The reported point estimates were calculated directly from the fitted HMM rather
 #### Confidence Intervals and Testing
 
 - 95% CI: Percentile method $[q_{0.025}, q_{0.975}]$ of bootstrap distribution
-- Hypothesis tests: Two-sided bootstrap p-values with a finite-sample correction and Holm correction within each comparison family. Retention and repair from State 1 formed an 18-comparison family, and long-run cooperation formed a nine-comparison family. Movement from neutral State 2 into cooperation was adjusted together with retention and repair from State 1, forming a 27-comparison family. Exits to States 1 and 2 were adjusted together across 18 comparisons.
+- Hypothesis tests: Two-sided bootstrap p-values with a finite-sample correction and Holm correction within each comparison family. Retention and repair from State 1 formed an 18-comparison family for the primary results (Table S29), and long-run cooperation formed a nine-comparison family. For the secondary neutral-state results (Table S33), movement from neutral State 2 into cooperation was adjusted together with retention and repair from State 1, forming a 27-comparison family. Exits to States 1 and 2 were adjusted together across 18 comparisons.
 
 The bootstrap simulated transitions within the fitted five-state model while holding the state structure and emission distributions fixed. The resulting intervals represent uncertainty in the transition model. Separate simulation of each starting-state model omits some covariance across transition blocks, and interval coverage remains unverified. `r trustee_sensitivity_sampling_description`
 
@@ -189,7 +187,7 @@ $$
 \end{aligned}
 $$
 
-Trustee models used CC as the reference and included BPD and AD indicators. Investor HMMs included only CC and BPD participants, with CC as the reference. The coefficients describe baseline transition probabilities, the effect of the trial-level predictor, group differences, and group-by-predictor differences. The denominator makes the probabilities across all possible next states sum to one.
+The trustee equations are presented using CC-referenced indicators; the fitted models used equivalent $-1/+1$ coding of the binary BPD and AD factors. Investor HMMs included only CC and BPD participants, with CC as the reference. The coefficients describe baseline transition probabilities, the effect of the trial-level predictor, group differences, and group-by-predictor differences. The denominator makes the probabilities across all possible next states sum to one. Initial state probabilities depended on first-round investment for trustees and were constant across investor sequences.
 
 #### Parameter Initialization and Multistart Search
 
@@ -1974,6 +1972,6 @@ Core packages:
 
 ### Data and Code Availability
 
-Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v5). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared.
+Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v6). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared.
 
 ---

@@ -6,7 +6,7 @@ The package contains analysis code, manuscript source, run instructions, and sof
 
 Contact: Ismail Guennouni, ismail.guennouni@iwr.uni-heidelberg.de. Manuscript authors are listed in [CITATION.txt](CITATION.txt).
 
-The fixed submission snapshot is the `submission-v5` release. Later updates to the repository may differ.
+The fixed submission snapshot is the `submission-v6` release. Later updates to the repository may differ.
 
 ## Run the analyses
 
@@ -17,7 +17,7 @@ The fixed submission snapshot is the `submission-v5` release. Later updates to t
    ```
 
 2. Prepare R 4.5.1 and the package versions in `renv.lock`, following [environment/README.md](environment/README.md). Python, Pandoc, and LaTeX are also required.
-3. Keep the two authorised input files in a directory outside this package.
+3. Keep the two authorised, prepared analysis input files in a directory outside this package.
 4. Run from the package directory, replacing the example paths:
 
    ```sh
@@ -39,9 +39,8 @@ To regenerate documents from a completed private run, use `Rscript render.R both
 |---|---|
 | `fresh` | Fit models from the two input files, recalculate analyses, and render documents. |
 | `reuse-fits` | Check and reuse the manuscript's fitted models, then recalculate subsequent analyses and render. |
-| `archived` | Render from the manuscript's existing result archives, without rerunning the bootstrap. |
 
-The latter two modes require an authorised original analysis archive and the additional argument `--private-archive /path/to/original-analysis`. Those archives are not distributed here.
+The `reuse-fits` mode requires an authorised original analysis archive and the additional argument `--private-archive /path/to/original-analysis`. Those archives are not distributed here. To render a completed run without recalculating its analyses, use `Rscript render.R both` in that run's private working directory.
 
 For a short pipeline check, add `--bootstrap 80 --no-render`. This reduced run cannot support the manuscript's statistical conclusions; document rendering requires the default 10,000 draws.
 

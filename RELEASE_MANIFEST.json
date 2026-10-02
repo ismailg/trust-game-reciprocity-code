@@ -1,5 +1,5 @@
 {
-  "version": "submission-v5",
+  "version": "submission-v6",
   "scope": "code-only; no participant data, fitted models or private Git history",
   "files": [
     {
@@ -10,12 +10,12 @@
     {
       "path": "CITATION.txt",
       "bytes": 438,
-      "sha256": "2201146f7811f9bb0d324617779049ae0d2942e0b927c943b1fc9044e0dcede8"
+      "sha256": "4ff03bf016734c82991fe33e7583ad877bc1295a490f874db3ae1ee336430205"
     },
     {
       "path": "Data/README.md",
-      "bytes": 1360,
-      "sha256": "1c22c5411aaa8c690e35016399fe6cd7ca9c6031c3adc34478e53f30cf25a22d"
+      "bytes": 1432,
+      "sha256": "f437f53768ceb37221f25247778eecd272fe7d07aeb9f99801754134ce22e0d4"
     },
     {
       "path": "LICENSE_STATUS.txt",
@@ -24,8 +24,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 5006,
-      "sha256": "eca2bc1c44674133f83dc5c12fc9450717a685bf637fce159297cba9fb5350ca"
+      "bytes": 5053,
+      "sha256": "0f5274967e570eddf5a90367578ab50b6c06bc1990b2bcf44fa429312b8d5bd1"
     },
     {
       "path": "VTC_RTG_analysis.Rmd",
@@ -34,8 +34,8 @@
     },
     {
       "path": "analysis_main.Rmd",
-      "bytes": 464719,
-      "sha256": "cf25c8f1167eb6453d3e8dc8a3c7dd17e4bd76e68ddd774f097bb5fa057f8530"
+      "bytes": 464600,
+      "sha256": "3a5c23854cf82b9e73df470e889e2176884210564ad0b48aba3ad89f9d90659f"
     },
     {
       "path": "apa.csl",
@@ -69,8 +69,8 @@
     },
     {
       "path": "references.bib",
-      "bytes": 16431,
-      "sha256": "3f7eef314f3aaaa8d4ed2d48f1f48638d5bf009878d3adb38fad1b4d9d81e623"
+      "bytes": 16051,
+      "sha256": "43f43f08a3acde159ab1f9c2bb20228dacc1e18a0ccdd308a127c878a3798dea"
     },
     {
       "path": "render.R",
@@ -84,8 +84,8 @@
     },
     {
       "path": "run_analysis.py",
-      "bytes": 5208,
-      "sha256": "f696afef0f1221e3629c87da0cdc923738f6d4bc09ef8d88ded9a3ad85cc204a"
+      "bytes": 4745,
+      "sha256": "0d45ac1ba607149eb0e52f01cc7fffee7a6e67d76174121c77504080632ac8f7"
     },
     {
       "path": "scripts/compute_covariates.R",
@@ -154,8 +154,8 @@
     },
     {
       "path": "supplement.Rmd",
-      "bytes": 80134,
-      "sha256": "d4a09d74f79d5631c445560a9308027a4b1c3c3fa15f520b0589331b603b32b4"
+      "bytes": 80411,
+      "sha256": "78c73050c8b86790eda2e6b04a7c269825f3966163bf30e8050c4eb299aa3f3a"
     },
     {
       "path": "tests/test_bootstrap_rules.R",
@@ -164,8 +164,8 @@
     },
     {
       "path": "tests/test_distribution.py",
-      "bytes": 4464,
-      "sha256": "be6990013b6083eeaa5339aee3c8f8b008219c911dcf08d27d84252f35e1114a"
+      "bytes": 4918,
+      "sha256": "d318132d1cc207bf3b0adfc64fa2d0b41e02fdb26f3ac2a3af3d5fadf36e0b2a"
     },
     {
       "path": "tests/test_input_checks.R",

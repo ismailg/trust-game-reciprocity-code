@@ -18,9 +18,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", required=True, type=Path)
     parser.add_argument("--work-dir", required=True, type=Path)
-    parser.add_argument("--mode", choices=("fresh", "reuse-fits", "archived"), default="fresh")
+    parser.add_argument("--mode", choices=("fresh", "reuse-fits"), default="fresh")
     parser.add_argument("--private-archive", type=Path,
-                        help="Authorised original analysis directory, only for archived/reuse-fits modes")
+                        help="Authorised original analysis directory, only for reuse-fits mode")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--bootstrap", type=int, default=10000)
     parser.add_argument("--no-render", action="store_true")
@@ -37,7 +37,7 @@ def main() -> None:
         parser.error("This mode requires --private-archive")
     if args.mode == "fresh" and args.private_archive is not None:
         parser.error("Fresh mode takes only the two data files, not archived results")
-    if not args.no_render and args.mode != "archived" and args.bootstrap != 10000:
+    if not args.no_render and args.bootstrap != 10000:
         parser.error("Small bootstrap checks cannot render a manuscript containing publication counts")
     for name in ("full_RTG_data.csv", "demographics.csv"):
         if not (data / name).is_file():
@@ -52,16 +52,10 @@ def main() -> None:
     (work / "PRIVATE_WORKSPACE.txt").write_text(
         "Contains restricted participant data and analysis objects. Do not distribute.\n")
     archive = args.private_archive.resolve() if args.private_archive else None
-    if args.mode == "archived":
-        # Work on private copies: rendering must never write into the archive.
-        # The manuscript's original checksums remain active.
-        (work / "results").mkdir()
-        shutil.copytree(archive / "results" / "HMM", work / "results" / "HMM")
-        shutil.copytree(archive / "modsData", work / "modsData")
-    elif args.mode == "reuse-fits":
+    if args.mode == "reuse-fits":
         (work / "private_fits").mkdir()
         fits = {
-            "investor.rds": "results/HMM/corrected_submission/standardized_investor_cc_bpd_merged_2026-07-28_v1/standardized_search_result.rds",
+            "investor.rds": "results/HMM/corrected_submission/standardized_investor_zero_return_2026-10-02_v1/standardized_search_result.rds",
             "trustee.rds": "results/HMM/corrected_submission/standardized_trustee_search_2026-07-21_v2/standardized_search_result.rds",
         }
         for name, source in fits.items():
@@ -72,9 +66,7 @@ def main() -> None:
     env.update(RTG_RUN_MODE=args.mode, RTG_WORKERS=str(args.workers),
                RTG_BOOTSTRAP_DRAWS=str(args.bootstrap), OMP_NUM_THREADS="1",
                OPENBLAS_NUM_THREADS="1", VECLIB_MAXIMUM_THREADS="1")
-    commands = []
-    if args.mode != "archived":
-        commands.append(["Rscript", "scripts/recompute.R"])
+    commands = [["Rscript", "scripts/recompute.R"]]
     if not args.no_render:
         commands.append(["Rscript", "render.R", "both"])
     status = {"mode": args.mode, "bootstrap_draws": args.bootstrap, "commands": []}
