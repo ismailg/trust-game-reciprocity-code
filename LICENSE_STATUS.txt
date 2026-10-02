@@ -1,0 +1,12 @@
+The analysis code has no open-source licence at this release. Contact the
+corresponding author for reuse permissions.
+
+The included apa.csl is the American Psychological Association 7th-edition
+Citation Style Language style. Its embedded attribution and Creative Commons
+Attribution-ShareAlike 3.0 notice are retained. That licence applies to the
+style. Nonexecuting style comments were removed; attribution and styling rules
+remain unchanged. The style licence does not apply automatically to the analysis code, manuscript, or data.
+
+R packages and other external software retain their own licences; they are
+not bundled here. No licence to redistribute the restricted data or fitted
+models is granted.

@@ -1,0 +1,13 @@
+file,field,type,coding,meaning
+full_RTG_data.csv,role,categorical,investor; trustee,"Participant role, constant over ten rounds"
+full_RTG_data.csv,round,integer,1 through 10,Round within participant
+full_RTG_data.csv,investment,integer,0 through 20 tokens,Investor transfer; tripled before trustee return
+full_RTG_data.csv,return,numeric,0 through three times investment,Tokens returned by trustee
+full_RTG_data.csv,group,categorical,CC; BPD; AD; ASPD; missing,CC community controls; BPD borderline personality disorder; AD affective-symptom sample; ASPD and missing groups excluded
+full_RTG_data.csv,type,categorical,BEH; MRI; WEB,In-person behavioural; during scanning; online administration
+full_RTG_data.csv,return_ratio,numeric,0 through 1; may be missing at zero investment,Return divided by tripled investment; zero-investment handling is explicit in preprocessing
+full_RTG_data.csv,NEMO_ID,identifier,Original source format; may be missing,Source identifier retained by the input-reading code; do not distribute real values
+full_RTG_data.csv,subject_ID,identifier,Original source format,Participant identifier; repeated rows are rounds; joins demographics ID
+demographics.csv,ID,identifier,Original source format,Matches subject_ID after character conversion
+demographics.csv,Age,numeric,Valid analysis range is greater than 0 and less than 100,Age in years; invalid or unavailable age becomes missing
+demographics.csv,Gender,categorical code,1 Male; 2 Female; 3 Other; 4 Prefer not to say,Descriptive table retains four labels; age/gender sensitivity models use codes1 and2 and exclude other or missing values

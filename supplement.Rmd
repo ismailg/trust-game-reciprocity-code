@@ -1,0 +1,1959 @@
+---
+output:
+  bookdown::pdf_document2:
+    number_sections: false
+    toc: false
+bibliography: references.bib
+csl: apa.csl
+link-citations: true
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{placeins}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+---
+
+```{r run-main-analysis, include=FALSE}
+invisible(knitr::knit_child("analysis_main.Rmd", quiet = TRUE))
+```
+
+# Supplementary Materials
+
+```{=latex}
+\setcounter{table}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theHtable}{S\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theHfigure}{S\arabic{figure}}
+```
+
+## S1. Detailed Methodological Specifications
+
+### S1.1 Behavioural Feature Definitions: Complete Formulas
+
+Beyond mean investment amounts and return proportions, we derived behavioural features capturing dynamic reciprocity patterns and strategic adjustment. While these can be summarised as participant-level proportions for descriptive purposes, our primary analysis treated them as binary outcomes in trial-level generalised linear mixed models (GLMMs).
+
+Descriptive proportions used the opportunity conditions below. Trial-level models additionally applied the stated eligibility conditions to exclude rounds in which the response was impossible. All trial-level models used rounds with the required previous-round information and observed outcomes, excluding the first round.
+
+#### Fair Return Benchmark
+
+We defined a "fair return" as the amount equalising payoffs between investor and trustee:
+
+$$\text{fair\_return} = \begin{cases} 2 \times \text{investment} - 10 & \text{if investment} \geq 5 \\ 0 & \text{otherwise} \end{cases}$$
+
+When investment < 5, any positive return exceeds fairness because the tripled amount is insufficient to equalise payoffs. For example, if investment is 0, the trustee receives 0, and if investment is 1, the trustee receives 3, such that any return leaves unequal totals.
+
+#### Investor Behavioural Features
+
+**Responsiveness:** Modelled as a binary event on trials following better-than-fair returns.
+*   *Opportunity Condition:* $\text{return}_{t-1} > \text{fair\_return}_{t-1}$
+*   *Additional Model Eligibility:* $\text{investment}_{t-1} < 20$, so investment could increase.
+*   *Event (Outcome = 1):* $\text{investment}_t > \text{investment}_{t-1}$
+
+**Retaliation:** Modelled as a binary event on trials following worse-than-fair returns.
+*   *Opportunity Condition:* $\text{return}_{t-1} < \text{fair\_return}_{t-1}$
+*   *Additional Model Eligibility:* $\text{investment}_{t-1} > 0$, so investment could decrease.
+*   *Event (Outcome = 1):* $\text{investment}_t < \text{investment}_{t-1}$
+
+#### Trustee Behavioural Features
+
+**Coaxing:** Modelled as a binary event on trials with low investment.
+*   *Opportunity Condition:* $0 < \text{investment}_t \leq 5$
+*   *Event (Outcome = 1):* $\text{return}_t \geq \text{investment}_t$
+
+We used this boundary because at 5 tokens the equal-payoff return is 0, whereas investments above 5 tokens have a positive fair-return benchmark and were analysed through the general return and fairness variables.
+
+**Encouragement:** Modelled as a binary event on trials where the investor decreased their stake.
+*   *Opportunity Condition:* $\text{investment}_t < \text{investment}_{t-1}$
+*   *Additional Model Eligibility:* $\text{return}_{t-1} < 3\times\text{investment}_t$, so the maximum feasible current return exceeded the previous return.
+*   *Event (Outcome = 1):* $\text{return}_t > \text{return}_{t-1}$
+
+**Cooperation pick-up:** Modelled as a binary event on trials where the investor increased their stake.
+*   *Opportunity Condition:* $\text{investment}_t > \text{investment}_{t-1}$
+*   *Additional Model Eligibility:* $\text{return}_{t-1} < 3\times\text{investment}_t$, so the maximum feasible current return exceeded the previous return.
+*   *Event (Outcome = 1):* $\text{return}_t > \text{return}_{t-1}$
+
+### S1.2 Model Fitting and Selection Procedures
+
+#### Optimizer Configuration
+
+For the LMM analyses, maximum-likelihood candidate models were fit with retry-based optimizer checks. The primary optimizer was `bobyqa`, with a maximum of 1,000,000 function evaluations; `nloptwrap` was used as a fallback with the same limit when needed. Candidate fits were retained when the optimizer returned convergence code 0 and no `lme4` convergence warning was present. Maximum gradients were logged as diagnostics. Selected LMMs were refit using REML with the same retry procedure for final reporting. Trial-level GLMMs were fit with `bobyqa` using the outcome-specific random-effects structures described below.
+
+#### Likelihood Ratio Test Procedure
+
+Sequential model comparisons:
+
+1. Fit nested sequence of models
+2. Compare using: $\text{LRT} = -2(\text{logL}_{\text{simpler}} - \text{logL}_{\text{complex}})$
+3. Test statistic follows $\chi^2$ distribution with df = parameter difference
+4. Selection criterion: $p < .05$ to justify additional complexity
+
+#### Random Effects Structure
+
+Random-effects structures were specified by model family and retained only when they yielded acceptable fits. Investor LMMs included participant-specific intercepts and slopes for lagged net return. The trustee LMM hierarchy used participant-specific intercepts only in the retained nested comparisons, because the interaction models needed for the likelihood-ratio hierarchy were not retained as acceptable random-slope fits. Investor tactical GLMMs included participant-specific intercepts and slopes for lagged fairness gap. Trustee tactical GLMMs first attempted participant-specific slopes for current investment and were simplified to random intercepts when the slope specification was singular or produced convergence warnings; the retained structure for each model is reported with the trustee tactical results.
+
+#### Contrast Coding
+
+During selection: Treatment contrasts (CC reference) for sequential model building.
+
+For reporting: Sum-to-zero contrasts for Type III ANOVA-style tests, ensuring main effects interpretable with interactions.
+
+#### Effect-size Reporting
+
+We do not report standardised effect sizes, such as Cohen's *d* or partial $\eta^2$, for the mixed-effects models because variance partitioning in multilevel designs with random effects and interaction terms remains methodologically unsettled. There is no consensus on how variance should be apportioned between fixed and random components, and existing proposals, such as marginal and conditional $R^2$, may be misleading when random-effects structures are complex [@rights2019tying; @matuschek2017balancing].
+
+### S1.3 Bootstrap Algorithm for Trustee HMM Transition Dynamics
+
+For the trustee HMM, we implemented an approximate, model-conditional transition bootstrap with 10,000 successful draws to quantify uncertainty in retention, repair, transitions involving the neutral state, and long-run cooperation. The selected state structure and emission distributions remained fixed.
+
+#### Algorithm Steps
+
+First, we extracted probability-weighted current-to-next-state transition counts from the fitted HMM using the forward-backward algorithm. We then fitted a multinomial transition model for each starting state, including investment, diagnostic group, and their interaction.
+
+Before fitting these models, fractional transition counts were multiplied by 2,000 and rounded to whole counts. This preserved their relative weights while providing the counts used in simulation.
+
+For each bootstrap sample, we:
+
+1. simulated transitions from these models;
+2. refitted the transition models;
+3. recalculated retention, repair, transitions involving the neutral state, and long-run cooperation at investments of 5, 10, and 15 tokens; and
+4. stored the results when every refitted model was successful.
+
+`r trustee_bootstrap_sampling_description`
+
+The reported point estimates were calculated directly from the fitted HMM rather than from the bootstrap transition models.
+
+#### Confidence Intervals and Testing
+
+- 95% CI: Percentile method $[q_{0.025}, q_{0.975}]$ of bootstrap distribution
+- Hypothesis tests: Two-sided bootstrap p-values with a finite-sample correction and Holm correction within each comparison family. Retention and repair from State 1 formed an 18-comparison family, and long-run cooperation formed a nine-comparison family. Movement from neutral State 2 into cooperation was adjusted together with retention and repair from State 1, forming a 27-comparison family. Exits to States 1 and 2 were adjusted together across 18 comparisons.
+
+The bootstrap simulated transitions within the fitted five-state model while holding the state structure and emission distributions fixed. The resulting intervals represent uncertainty in the transition model. Separate simulation of each starting-state model omits some covariance across transition blocks, and interval coverage remains unverified. `r trustee_sensitivity_sampling_description`
+
+### S1.4 Hidden Markov Model Technical Specifications
+
+#### Custom Response Distributions
+
+Variable Truncated Discretised Gaussian (vtdgaus) for Trustee Returns
+
+When the investor sent $I_t$ tokens, the trustee could return any whole-token amount from 0 to $3I_t$. For $I_t>0$, the model represented the observed return as the proportion $r/(3I_t)$ and calculated the probability mass for each one-token bin:
+
+$$P(R_t = r \mid S_t = k, I_t) =
+\frac{
+\Phi\left(\frac{r+0.5}{3I_t};\mu_k,\sigma_k\right) -
+\Phi\left(\frac{r-0.5}{3I_t};\mu_k,\sigma_k\right)
+}{
+\Phi\left(1+\frac{1}{6I_t};\mu_k,\sigma_k\right) -
+\Phi\left(-\frac{1}{6I_t};\mu_k,\sigma_k\right)
+}.$$
+
+Here, $\Phi(\cdot;\mu_k,\sigma_k)$ is the cumulative Gaussian distribution for state $k$.
+
+When $I_t=0$, the only possible return was zero, and its emission probability was set to one.
+
+Truncated Discretised Gaussian (truncdiscgaus) for Investor Amounts
+
+Let $y_t$ be the investment on round $t$ and $k$ the latent state. Investments range from 0 to 20 tokens:
+
+$$P(y_t = x | s_t = k) = \frac{\Phi(x + 0.5; \mu_k, \sigma_k) - \Phi(x - 0.5; \mu_k, \sigma_k)}{\Phi(20.5; \mu_k, \sigma_k) - \Phi(-0.5; \mu_k, \sigma_k)}$$
+
+#### Transition Model Specifications
+
+Let $s_t=i$ denote the current state, $s_{t+1}=j$ the next state, and $G$ the diagnostic group. For trustees, the transition predictor was the partner's investment, $I_{t+1}$, on the next round:
+
+$$P(s_{t+1} = j | s_t = i, I_{t+1}, G) = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} I_{t+1} + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot I_{t+1}\right)}{\sum_{j'} \exp(\cdots)}$$
+
+For investors, the transition predictor was the participant's net earnings on the current round, $\text{PnL}_t = \text{return}_t - \text{investment}_t$:
+
+$$P(s_{t+1} = j | s_t = i, \text{PnL}_t, G) = \frac{\exp\left(\beta_{ij0} + \beta_{ij1} \text{PnL}_t + \sum_g \gamma_{ijg} \mathbb{I}[G=g] + \sum_g \delta_{ijg} \mathbb{I}[G=g] \cdot \text{PnL}_t\right)}{\sum_{j'} \exp(\cdots)}$$
+
+Trustee models used CC as the reference and included BPD and AD indicators. Investor HMMs included only CC and BPD participants, with CC as the reference. The coefficients describe baseline transition probabilities, the effect of the trial-level predictor, group differences, and group-by-predictor differences. The denominator makes the probabilities across all possible next states sum to one.
+
+#### Parameter Initialization and Multistart Search
+
+Investor and trustee HMMs used the same multistart search and fit-validity criteria. For each state count and model family, we screened `r hmm_standardized_search_settings$screen_starts` randomized state-membership starts for `r hmm_standardized_search_settings$screen_iterations` iterations and continued the `r hmm_standardized_search_settings$full_starts` highest-likelihood candidates for up to `r hmm_standardized_search_settings$max_iterations` iterations. We also fitted a structured start that placed the starting state means evenly across the feasible response range. Diagnosis-dependent models were additionally fitted from warm starts based on the highest-likelihood and structured diagnosis-free fits, with the new diagnostic-group coefficients initially set to zero. `r hmm_standardized_search_settings$perturbations` small perturbations were fitted around each of the structured diagnosis-dependent and structured warm starts. If no candidate passed the validity criteria, up to `r hmm_standardized_search_settings$rescue_rounds` additional rounds continued the best finite candidates.
+
+A fit was retained only if the fitting algorithm reported convergence, all likelihoods and parameters were finite, every response distribution had non-zero spread, and every state accounted for at least 0.5% of the total posterior state probability across trials. This final requirement excluded effectively unused states. Among the valid candidates, we retained the fit with the highest log likelihood. States were then ordered by mean return proportion for trustees and mean investment for investors.
+
+#### Model Selection
+
+At the selected state count, the diagnosis-free model was nested within the diagnosis-dependent model because it could be obtained by constraining the group coefficients to zero. Standard likelihood-ratio theory applies to such fixed-state nested HMM comparisons under regularity conditions, but not to comparisons that change the number of hidden states [@giudici2000likelihood].
+
+## S2. Additional Tables
+
+```{=latex}
+\FloatBarrier
+```
+
+### Average Investment by Diagnostic Group
+
+```{r supp-investor-summary, include=TRUE}
+# investor_analysis columns already renamed at line 1132
+investor_analysis %>%
+  format_p_cols() %>%
+  supp_apa(caption = "Average investment by diagnostic group",
+           label = "supp-investor-summary")
+```
+
+### Investor LMM Details
+
+```{r supp-investor-lmm-aic, include=TRUE}
+aic_tbl %>%
+  format_p_cols() %>%
+  supp_apa(caption = "Investor LMM model comparison (smaller AIC is better).",
+           label = "supp-investor-lmm-aic")
+```
+
+```{r supp-investor-lmm-lrt, include=TRUE}
+if (exists("lr_tbl") && nrow(lr_tbl) > 0) {
+  lr_tbl %>%
+    format_p_cols() %>%
+    supp_apa(caption = "Likelihood-ratio tests comparing the fit of nested Investor Linear Mixed Models.",
+             label = "supp-investor-lmm-lrt")
+} else {
+  cat("Likelihood-ratio comparisons unavailable (no nested models converged).")
+}
+```
+
+
+The winning Investor LMM (two-way interaction model) is specified as:
+
+$$
+\begin{aligned}
+\text{Investment}_{ij} &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} + \beta_3 \text{LagNetReturn}_{ij} \\
+&\quad + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) + \beta_5 (\text{Group}_j \times \text{LagNetReturn}_{ij}) \\
+&\quad + u_{0j} + u_{1j} \text{LagNetReturn}_{ij} + \epsilon_{ij}
+\end{aligned}
+$$
+
+```{r supp-investor-lmm-coefs, include=TRUE}
+tab_inv %>%
+  format_p_cols() %>%
+  setNames(c("Term", "Estimate", "Std Error", "95% CI Lower", "95% CI Upper", "Statistic", "p-value")) %>%
+  supp_apa(caption = "Investor LMM fixed effects (REML).",
+           label = "supp-investor-lmm-coefs") %>%
+  flextable::width(j = 1, width = 2) %>%
+  flextable::width(j = 2:7, width = 0.7) %>%
+  supp_fit()
+```
+
+### Investor Tactical GLMMs
+
+
+The Investor Tactical GLMMs (Responsiveness and Retaliation) are specified as:
+
+$$
+\begin{aligned}
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{LagFairGap}_{ij} + \beta_2 \text{PrevStake}_{ij} \\
+&\quad + \beta_3 \text{ns}(\text{Round}_{ij})_1 + \beta_4 \text{ns}(\text{Round}_{ij})_2 + \beta_5 \text{Group}_j \\
+&\quad + u_{0j} + u_{1j} \text{LagFairGap}_{ij}
+\end{aligned}
+$$
+
+```{r supp-investor-glmm-table, include=TRUE}
+if (exists("investor_glmm_print")) {
+  investor_glmm_print %>%
+    format_p_cols() %>%
+    supp_apa(caption = "Trial-level hierarchical GLMMs for investor tactical responses. Significance levels: * p < .05, ** p < .01, *** p < .001",
+             label = "supp-investor-glmm-table")
+} else {
+  cat("Investor GLMM table unavailable.")
+}
+```
+
+### Average Return Proportion by Diagnostic Group
+
+```{r supp-trustee-summary, include=TRUE}
+# trustee_analysis columns already renamed at line 1933
+trustee_analysis %>%
+  format_p_cols() %>%
+  supp_apa(caption = "Average return proportion by diagnostic group",
+           label = "supp-trustee-summary")
+```
+
+### Trustee LMM Details
+
+```{r supp-trustee-lmm-lrt, include=TRUE}
+if (exists("trust_lr_tbl") && nrow(trust_lr_tbl) > 0) {
+  trust_lr_tbl %>%
+    format_p_cols() %>%
+    supp_apa(caption = "Likelihood-ratio tests comparing the fit of nested Trustee Linear Mixed Models.",
+             label = "supp-trustee-lmm-lrt")
+} else {
+  cat("Likelihood-ratio comparisons unavailable (no nested models converged).")
+}
+```
+
+
+The winning Trustee LMM (two-way interaction model) is specified as:
+
+$$
+\begin{aligned}
+\text{logit}(\text{ReturnRatio}_{ij}) &= \beta_0 + \beta_1 \text{Group}_j + \beta_2 \text{Round}_{ij} + \beta_3 \text{Investment}_{ij} \\
+&\quad + \beta_4 (\text{Group}_j \times \text{Round}_{ij}) + \beta_5 (\text{Group}_j \times \text{Investment}_{ij}) \\
+&\quad + \beta_6 (\text{Round}_{ij} \times \text{Investment}_{ij}) \\
+&\quad + u_{0j} + \epsilon_{ij}
+\end{aligned}
+$$
+
+```{r supp-trustee-lmm-coefs, include=TRUE}
+supp_apa(tab_trust,
+         caption = "Trustee LMM fixed effects (REML).",
+         label = "supp-trustee-lmm-coefs",
+         font_size = 9)
+```
+
+### Trustee Tactical GLMMs
+
+
+The Trustee Tactical GLMMs (Coaxing, Encouragement, Cooperation Pick-up) shared the following fixed-effects structure:
+
+$$
+\begin{aligned}
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
+&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 + \beta_6 \text{Group}_j \\
+&\quad + u_{0j}
+\end{aligned}
+$$
+
+Coaxing and encouragement retained participant-specific random intercepts only. Cooperation pick-up additionally retained a participant-specific random slope for current investment:
+
+$$
+\begin{aligned}
+\text{logit}(P(\text{Response}_{ij} = 1)) &= \beta_0 + \beta_1 \text{CurrInvest}_{ij} + \beta_2 \text{PrevInvest}_{ij} + \beta_3 \text{PrevFairGap}_{ij} \\
+&\quad + \beta_4 \text{ns}(\text{Round}_{ij})_1 + \beta_5 \text{ns}(\text{Round}_{ij})_2 + \beta_6 \text{Group}_j \\
+&\quad + u_{0j} + u_{1j} \text{CurrInvest}_{ij}
+\end{aligned}
+$$
+
+```{r supp-trustee-glmm-table, include=TRUE}
+if (exists("trustee_glmm_print")) {
+  trustee_glmm_print %>%
+    format_p_cols() %>%
+    supp_apa(caption = "Trial-level hierarchical GLMMs for trustee tactical responses. Significance levels: * p < .05, ** p < .01, *** p < .001",
+             label = "supp-trustee-glmm-table")
+} else {
+  cat("Trustee GLMM table unavailable.")
+}
+```
+
+### Demographic Covariate Sensitivity Analyses
+
+As a robustness check, we refit the diagnosis-relevant mixed models on the subset with valid age and binary gender data (Male/Female only), adding centered age and gender as additive covariates. These analyses were not part of the primary model-selection procedure and are intended to assess whether the main diagnostic patterns are materially altered by available demographic imbalance. Because the AD investor subgroup remained small even in the matched sample, investor sensitivity analyses should be interpreted descriptively.
+
+For encouragement, both demographic models retained the participant-specific random-intercept structure used in the primary analysis, so that only the addition of age and gender differed between the matched-sample fits.
+
+```{r supp-demographic-sensitivity-setup, include=FALSE}
+sens_old_contrasts <- getOption("contrasts")
+options(contrasts = c("contr.treatment", "contr.poly"))
+
+demo_complete <- demo_lookup %>%
+  filter(!is.na(age), gender %in% c("Male", "Female")) %>%
+  transmute(
+    subject_ID,
+    age,
+    gender_cc = factor(gender, levels = c("Female", "Male"))
+  )
+
+join_demo_complete <- function(df) {
+  df %>%
+    inner_join(demo_complete, by = "subject_ID") %>%
+    mutate(
+      age_c = scale(age, center = TRUE, scale = FALSE)[, 1],
+      gender_cc = droplevels(gender_cc)
+    )
+}
+
+format_ci_text <- function(lower, upper, accuracy = 0.001) {
+  paste0(
+    "[",
+    scales::number(lower, accuracy = accuracy),
+    ", ",
+    scales::number(upper, accuracy = accuracy),
+    "]"
+  )
+}
+
+extract_lmm_term <- function(model, term, analysis, model_label, effect_label) {
+  coef_tbl <- as.data.frame(summary(model)$coefficients)
+  coef_tbl$Parameter <- rownames(coef_tbl)
+  row <- coef_tbl %>%
+    filter(Parameter == term) %>%
+    slice(1)
+
+  if (nrow(row) == 0) {
+    return(tibble(
+      Analysis = analysis,
+      Model = model_label,
+      Effect = effect_label,
+      Estimate = NA_real_,
+      `95% CI` = NA_character_,
+      `p-value` = NA_real_,
+      `Holm-adjusted p-value` = NA_real_
+    ))
+  }
+
+  ci <- suppressWarnings(suppressMessages(confint(model, parm = term, method = "Wald")))
+  ci_low <- if (is.matrix(ci) && nrow(ci) >= 1) ci[1, 1] else NA_real_
+  ci_high <- if (is.matrix(ci) && nrow(ci) >= 1) ci[1, 2] else NA_real_
+
+  tibble(
+    Analysis = analysis,
+    Model = model_label,
+    Effect = effect_label,
+    Estimate = unname(row$Estimate[1]),
+    `95% CI` = format_ci_text(ci_low, ci_high),
+    `p-value` = unname(row$`Pr(>|t|)`[1]),
+    `Holm-adjusted p-value` = NA_real_
+  )
+}
+
+extract_group_contrasts <- function(model, analysis, model_label, at_list) {
+  emm <- emmeans(model, ~ group, at = at_list)
+  raw <- summary(
+    contrast(emm, method = "trt.vs.ctrl", ref = "CC", adjust = "none"),
+    infer = TRUE
+  ) %>%
+    as_tibble() %>%
+    mutate(contrast_key = gsub("\\s*/\\s*", " - ", contrast))
+
+  holm <- summary(
+    contrast(emm, method = "trt.vs.ctrl", ref = "CC", adjust = "holm"),
+    infer = TRUE
+  ) %>%
+    as_tibble() %>%
+    transmute(
+      contrast_key = gsub("\\s*/\\s*", " - ", contrast),
+      `Holm-adjusted p-value` = p.value
+    )
+
+  lower_col <- intersect(c("lower.CL", "asymp.LCL"), names(raw))[1]
+  upper_col <- intersect(c("upper.CL", "asymp.UCL"), names(raw))[1]
+
+  raw %>%
+    left_join(holm, by = "contrast_key") %>%
+    transmute(
+      Analysis = analysis,
+      Model = model_label,
+      Effect = gsub("\\s*-\\s*", " vs ", contrast_key),
+      Estimate = estimate,
+      `95% CI` = format_ci_text(.data[[lower_col]], .data[[upper_col]]),
+      `p-value` = p.value,
+      `Holm-adjusted p-value` = `Holm-adjusted p-value`
+    )
+}
+
+extract_tactical_contrasts <- function(model, outcome_label, model_label) {
+  raw <- summary(
+    contrast(
+      emmeans(model, ~ group),
+      method = "trt.vs.ctrl",
+      ref = "CC",
+      adjust = "none"
+    ),
+    infer = TRUE,
+    type = "response"
+  ) %>%
+    as_tibble() %>%
+    mutate(contrast_key = gsub("\\s*/\\s*", " - ", contrast))
+
+  holm <- summary(
+    contrast(
+      emmeans(model, ~ group),
+      method = "trt.vs.ctrl",
+      ref = "CC",
+      adjust = "holm"
+    ),
+    infer = TRUE,
+    type = "response"
+  ) %>%
+    as_tibble() %>%
+    transmute(
+      contrast_key = gsub("\\s*/\\s*", " - ", contrast),
+      `Holm-adjusted p-value` = p.value
+    )
+
+  lower_col <- intersect(c("lower.CL", "asymp.LCL"), names(raw))[1]
+  upper_col <- intersect(c("upper.CL", "asymp.UCL"), names(raw))[1]
+
+  raw %>%
+    left_join(holm, by = "contrast_key") %>%
+    transmute(
+      Outcome = outcome_label,
+      Model = model_label,
+      Contrast = gsub("\\s*-\\s*", " vs ", contrast_key),
+      `Odds Ratio` = odds.ratio,
+      `95% CI` = format_ci_text(.data[[lower_col]], .data[[upper_col]], accuracy = 0.01),
+      `p-value` = p.value,
+      `Holm-adjusted p-value` = `Holm-adjusted p-value`
+    )
+}
+
+fit_trustee_tactical_sens <- function(data, response, outcome_label, model_label, extra_terms = NULL,
+                                     random_structure = c("auto", "intercept")) {
+  random_structure <- match.arg(random_structure)
+  rhs_terms <- c(
+    "curr_invest_sc",
+    "prev_invest_sc",
+    "prev_fair_gap_sc",
+    "splines::ns(round, df = 2)",
+    "group",
+    extra_terms
+  )
+
+  slope_formula <- as.formula(paste(
+    response, "~", paste(rhs_terms, collapse = " + "),
+    "+ (1 + curr_invest_sc | subject_ID)"
+  ))
+  intercept_formula <- as.formula(paste(
+    response, "~", paste(rhs_terms, collapse = " + "),
+    "+ (1 | subject_ID)"
+  ))
+
+  if (random_structure == "intercept") {
+    # Hold participant structure fixed when comparing demographic covariates.
+    final_fit <- fit_trustee_candidate(intercept_formula, data)
+    if (trustee_glmm_has_issue(final_fit)) {
+      stop(paste("Random-intercept sensitivity model failed checks for", outcome_label, "-", model_label))
+    }
+  } else {
+    slope_fit <- fit_trustee_candidate(slope_formula, data)
+    use_slope <- !trustee_glmm_has_issue(slope_fit)
+    final_fit <- if (use_slope) slope_fit else fit_trustee_candidate(intercept_formula, data)
+  }
+
+  if (is.null(final_fit)) {
+    stop(paste("Sensitivity tactical model failed for", outcome_label, "-", model_label))
+  }
+
+  extract_tactical_contrasts(final_fit, outcome_label = outcome_label, model_label = model_label)
+}
+
+count_complete_case <- function(df, analysis_label) {
+  df %>%
+    distinct(subject_ID, group) %>%
+    count(group, name = "Complete-case N") %>%
+    transmute(
+      Analysis = analysis_label,
+      Group = group,
+      `Complete-case N`
+    )
+}
+
+fit_sensitivity_lmer <- function(formula, data, label) {
+  for (cfg in fit_controls) {
+    attempt <- tryCatch(
+      lmer(formula, data = data, REML = TRUE, control = cfg$ctrl),
+      error = function(e) NULL
+    )
+    if (!is.null(attempt)) {
+      emit_status(sprintf(
+        "[%s | %s] sensitivity fit retained (max|grad| = %s)\n",
+        label,
+        cfg$name,
+        ifelse(is.na(get_max_grad(attempt)), "NA", scales::number(get_max_grad(attempt), accuracy = 0.0001))
+      ))
+      return(attempt)
+    }
+  }
+  NULL
+}
+
+investor_sens_source <- clean_dat %>%
+  filter(role == "investor") %>%
+  arrange(subject_ID, round) %>%
+  group_by(subject_ID) %>%
+  mutate(lag_net_return = lag(return - investment)) %>%
+  ungroup() %>%
+  drop_na(lag_net_return) %>%
+  mutate(
+    group = factor(group, levels = c("CC", "BPD", "AD")),
+    round_c = scale(round, center = TRUE, scale = FALSE)[, 1],
+    lag_net_return_c = scale(lag_net_return, center = TRUE, scale = FALSE)[, 1]
+  )
+
+trustee_sens_source <- clean_dat %>%
+  filter(role == "trustee", investment > 0, !is.na(return)) %>%
+  mutate(
+    group = factor(group, levels = c("CC", "BPD", "AD")),
+    round_c = scale(round, center = TRUE, scale = FALSE)[, 1],
+    investment_c = scale(investment, center = TRUE, scale = FALSE)[, 1],
+    return_prop = pmin(pmax(return / (3 * investment), 1e-4), 1 - 1e-4),
+    logit_return = qlogis(return_prop)
+  )
+
+trustee_tactical_sens_source <- clean_dat %>%
+  filter(role == "trustee", !is.na(lag_investment), !is.na(group)) %>%
+  mutate(
+    prev_invest_sc = z_score(lag_investment),
+    curr_invest_sc = z_score(investment),
+    prev_fair_gap = dplyr::coalesce(lag_fair_gap, 0),
+    prev_fair_gap_sc = z_score(prev_fair_gap),
+    eligible_coax = investment > 0 & investment <= 5,
+    eligible_encour = investment < lag_investment & lag_return < 3 * investment
+  )
+
+inv_demo_dat <- join_demo_complete(investor_sens_source)
+trust_demo_dat <- join_demo_complete(trustee_sens_source)
+trustee_trial_demo <- join_demo_complete(trustee_tactical_sens_source)
+trustee_coax_demo <- trustee_trial_demo %>% filter(eligible_coax, !is.na(trustee_coaxing_event))
+trustee_encour_demo <- trustee_trial_demo %>% filter(eligible_encour, !is.na(trustee_encouragement_event))
+
+demo_sens_counts <- bind_rows(
+  count_complete_case(inv_demo_dat, "Investor investment LMM"),
+  count_complete_case(trust_demo_dat, "Trustee return LMM"),
+  count_complete_case(trustee_coax_demo, "Trustee coaxing GLMM"),
+  count_complete_case(trustee_encour_demo, "Trustee encouragement GLMM")
+) %>%
+  mutate(
+    Analysis = factor(
+      Analysis,
+      levels = c(
+        "Investor investment LMM",
+        "Trustee return LMM",
+        "Trustee coaxing GLMM",
+        "Trustee encouragement GLMM"
+      )
+    ),
+    Group = factor(Group, levels = c("CC", "BPD", "AD"))
+  ) %>%
+  arrange(Analysis, Group)
+
+inv_sens_base_fit <- fit_with_retry(
+  formula = best_model_entry$formula,
+  data = inv_demo_dat,
+  label = "Investor complete-case (REML)",
+  REML_flag = TRUE
+)
+if (is.null(inv_sens_base_fit)) {
+  inv_sens_base_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = best_model_entry$formula,
+      data = inv_demo_dat,
+      label = "Investor complete-case sensitivity fallback"
+    )
+  )
+}
+if (is.null(inv_sens_base_fit$fit)) {
+  stop("Investor complete-case sensitivity model failed to fit.")
+}
+
+inv_sens_adj_fit <- fit_with_retry(
+  formula = update(best_model_entry$formula, . ~ . + age_c + gender_cc),
+  data = inv_demo_dat,
+  label = "Investor age/gender adjusted (REML)",
+  REML_flag = TRUE
+)
+if (is.null(inv_sens_adj_fit)) {
+  inv_sens_adj_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = update(best_model_entry$formula, . ~ . + age_c + gender_cc),
+      data = inv_demo_dat,
+      label = "Investor age/gender sensitivity fallback"
+    )
+  )
+}
+if (is.null(inv_sens_adj_fit$fit)) {
+  stop("Investor age/gender sensitivity model failed to fit.")
+}
+
+investor_sens_table <- bind_rows(
+  extract_lmm_term(
+    inv_sens_base_fit$fit,
+    "groupBPD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Unadjusted complete-case",
+    effect_label = "BPD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_sens_base_fit$fit,
+    "groupAD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Unadjusted complete-case",
+    effect_label = "AD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_sens_adj_fit$fit,
+    "groupBPD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Age/gender adjusted",
+    effect_label = "BPD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_sens_adj_fit$fit,
+    "groupAD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Age/gender adjusted",
+    effect_label = "AD x lagged net return"
+  )
+)
+
+trust_sens_base_fit <- fit_with_retry(
+  formula = trust_best_entry$formula,
+  data = trust_demo_dat,
+  label = "Trustee complete-case (REML)",
+  REML_flag = TRUE
+)
+if (is.null(trust_sens_base_fit)) {
+  trust_sens_base_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = trust_best_entry$formula,
+      data = trust_demo_dat,
+      label = "Trustee complete-case sensitivity fallback"
+    )
+  )
+}
+if (is.null(trust_sens_base_fit$fit)) {
+  stop("Trustee complete-case sensitivity model failed to fit.")
+}
+
+trust_sens_adj_fit <- fit_with_retry(
+  formula = update(trust_best_entry$formula, . ~ . + age_c + gender_cc),
+  data = trust_demo_dat,
+  label = "Trustee age/gender adjusted (REML)",
+  REML_flag = TRUE
+)
+if (is.null(trust_sens_adj_fit)) {
+  trust_sens_adj_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = update(trust_best_entry$formula, . ~ . + age_c + gender_cc),
+      data = trust_demo_dat,
+      label = "Trustee age/gender sensitivity fallback"
+    )
+  )
+}
+if (is.null(trust_sens_adj_fit$fit)) {
+  stop("Trustee age/gender sensitivity model failed to fit.")
+}
+
+trustee_sens_table <- bind_rows(
+  extract_group_contrasts(
+    trust_sens_base_fit$fit,
+    analysis = "Trustee return LMM",
+    model_label = "Unadjusted complete-case",
+    at_list = list(round_c = 0, investment_c = 0)
+  ),
+  extract_group_contrasts(
+    trust_sens_adj_fit$fit,
+    analysis = "Trustee return LMM",
+    model_label = "Age/gender adjusted",
+    at_list = list(round_c = 0, investment_c = 0, age_c = 0)
+  )
+)
+
+tactical_sens_table <- bind_rows(
+  fit_trustee_tactical_sens(
+    trustee_coax_demo,
+    response = "trustee_coaxing_event",
+    outcome_label = "Coaxing",
+    model_label = "Unadjusted complete-case"
+  ),
+  fit_trustee_tactical_sens(
+    trustee_coax_demo,
+    response = "trustee_coaxing_event",
+    outcome_label = "Coaxing",
+    model_label = "Age/gender adjusted",
+    extra_terms = c("age_c", "gender_cc")
+  ),
+  fit_trustee_tactical_sens(
+    trustee_encour_demo,
+    response = "trustee_encouragement_event",
+    outcome_label = "Encouragement",
+    model_label = "Unadjusted complete-case",
+    random_structure = "intercept"
+  ),
+  fit_trustee_tactical_sens(
+    trustee_encour_demo,
+    response = "trustee_encouragement_event",
+    outcome_label = "Encouragement",
+    model_label = "Age/gender adjusted",
+    extra_terms = c("age_c", "gender_cc"),
+    random_structure = "intercept"
+  )
+)
+
+get_sens_row <- function(df, ...) {
+  df %>%
+    filter(...) %>%
+    slice(1)
+}
+
+fmt_sens_term <- function(row, est_col = "Estimate", ci_col = "95% CI", p_col = "p-value",
+                          p_holm_col = "Holm-adjusted p-value", prefix = "") {
+  txt <- paste0(
+    prefix,
+    scales::number(row[[est_col]][1], accuracy = 0.001),
+    ", 95% CI ",
+    row[[ci_col]][1],
+    ", raw *p* ",
+    format_pval_clause(row[[p_col]][1])
+  )
+  if (p_holm_col %in% names(row) && !is.na(row[[p_holm_col]][1])) {
+    txt <- paste0(
+      txt,
+      ", Holm-adjusted *p* ",
+      format_pval_clause(row[[p_holm_col]][1])
+    )
+  }
+  txt
+}
+
+inv_bpd_base_text <- fmt_sens_term(
+  get_sens_row(investor_sens_table, Model == "Unadjusted complete-case", Effect == "BPD x lagged net return")
+)
+inv_bpd_adj_text <- fmt_sens_term(
+  get_sens_row(investor_sens_table, Model == "Age/gender adjusted", Effect == "BPD x lagged net return")
+)
+trust_ad_base_text <- fmt_sens_term(
+  get_sens_row(trustee_sens_table, Model == "Unadjusted complete-case", Effect == "AD vs CC")
+)
+trust_ad_adj_text <- fmt_sens_term(
+  get_sens_row(trustee_sens_table, Model == "Age/gender adjusted", Effect == "AD vs CC")
+)
+encour_ad_base_text <- fmt_sens_term(
+  get_sens_row(tactical_sens_table, Outcome == "Encouragement", Model == "Unadjusted complete-case", Contrast == "AD vs CC"),
+  est_col = "Odds Ratio",
+  prefix = "OR = "
+)
+encour_ad_adj_text <- fmt_sens_term(
+  get_sens_row(tactical_sens_table, Outcome == "Encouragement", Model == "Age/gender adjusted", Contrast == "AD vs CC"),
+  est_col = "Odds Ratio",
+  prefix = "OR = "
+)
+
+primary_sens_table <- bind_rows(investor_sens_table, trustee_sens_table)
+
+options(contrasts = sens_old_contrasts)
+```
+
+For contrast-based sensitivity analyses, we report both raw and Holm-adjusted *p*-values. Investor sensitivity to lagged returns remained stable on the matched complete-case sample: the BPD attenuation term was nearly unchanged before (`r inv_bpd_base_text`) and after demographic adjustment (`r inv_bpd_adj_text`), whereas the AD interaction remained null in both specifications. For trustees, the centered AD vs CC contrast in the return model attenuated slightly on the matched sample but remained positive before (`r trust_ad_base_text`) and after adjustment (`r trust_ad_adj_text`), while BPD vs CC remained null.
+
+For the trustee tactical results, encouragement was not robust to restriction to participants with complete demographic data: the AD vs CC contrast was already non-significant on the matched sample before adjustment (`r encour_ad_base_text`) and remained non-significant after adjustment (`r encour_ad_adj_text`). Coaxing remained nominal/non-significant in both matched-sample specifications.
+
+```{r supp-demographic-sensitivity-counts, include=TRUE}
+demo_sens_counts %>%
+  supp_apa(
+    caption = "Complete-case sample sizes for demographic covariate sensitivity analyses",
+    label = "supp-demographic-sensitivity-counts",
+    font_size = 8
+  )
+```
+
+```{r supp-demographic-sensitivity-primary, include=TRUE}
+primary_sens_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = "Diagnosis-relevant focal effects from complete-case demographic sensitivity analyses for the primary LMMs. Raw and Holm-adjusted p-values are both shown for contrast-based trustee effects.",
+    label = "supp-demographic-sensitivity-primary"
+  )
+```
+
+```{r supp-demographic-sensitivity-tactical, include=TRUE}
+tactical_sens_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = "Complete-case demographic sensitivity analyses for trustee tactical contrasts (raw and Holm-adjusted p-values shown)",
+    label = "supp-demographic-sensitivity-tactical"
+  )
+```
+
+### Administration-Mode Sensitivity Analyses
+
+Data were collected across three administration modes: in-person behavioural testing (BEH), testing during MRI scanning (MRI), and online testing (WEB). Administration mode was unevenly distributed across diagnostic groups and roles. In particular, 528 of 545 AD trustees were tested online, whereas all 16 AD investors were tested in person in the behavioural setting. We therefore report the full role-by-group distribution below and refit the primary LMMs and trustee tactical GLMMs with administration mode (dummy-coded, BEH as reference) as an additive covariate.
+
+```{r supp-admin-mode-sensitivity, include=FALSE}
+admin_old_contrasts <- getOption("contrasts")
+options(contrasts = c("contr.treatment", "contr.poly"))
+
+# Prepare data with type (administration mode) as factor
+# Filter out NAs in type
+inv_admin_dat <- investor_sens_source %>%
+  filter(!is.na(type)) %>%
+  mutate(type = factor(type, levels = c("BEH", "MRI", "WEB")))
+
+trust_admin_dat <- trustee_sens_source %>%
+  filter(!is.na(type)) %>%
+  mutate(type = factor(type, levels = c("BEH", "MRI", "WEB")))
+
+trustee_tactical_admin_source <- trustee_tactical_sens_source %>%
+  filter(!is.na(type)) %>%
+  mutate(type = factor(type, levels = c("BEH", "MRI", "WEB")))
+
+trustee_coax_admin <- trustee_tactical_admin_source %>%
+  filter(eligible_coax, !is.na(trustee_coaxing_event))
+trustee_encour_admin <- trustee_tactical_admin_source %>%
+  filter(eligible_encour, !is.na(trustee_encouragement_event))
+
+# Sample sizes
+admin_sens_counts <- bind_rows(
+  count_complete_case(inv_admin_dat, "Investor investment LMM"),
+  count_complete_case(trust_admin_dat, "Trustee return LMM"),
+  count_complete_case(trustee_coax_admin, "Trustee coaxing GLMM"),
+  count_complete_case(trustee_encour_admin, "Trustee encouragement GLMM")
+) %>%
+  mutate(
+    Analysis = factor(Analysis, levels = c(
+      "Investor investment LMM", "Trustee return LMM",
+      "Trustee coaxing GLMM", "Trustee encouragement GLMM"
+    )),
+    Group = factor(Group, levels = c("CC", "BPD", "AD"))
+  ) %>%
+  arrange(Analysis, Group)
+
+# Administration-mode distribution by role and group
+admin_mode_counts <- clean_dat %>%
+  filter(!is.na(role), !is.na(group), !is.na(type)) %>%
+  distinct(subject_ID, role, group, type) %>%
+  count(role, group, type, name = "N")
+
+type_by_group <- tidyr::expand_grid(
+  role = c("investor", "trustee"),
+  group = c("CC", "BPD", "AD"),
+  type = c("BEH", "MRI", "WEB")
+) %>%
+  left_join(admin_mode_counts, by = c("role", "group", "type")) %>%
+  mutate(N = tidyr::replace_na(N, 0L)) %>%
+  tidyr::pivot_wider(names_from = type, values_from = N) %>%
+  mutate(
+    Role = recode(role, investor = "Investor", trustee = "Trustee"),
+    Group = factor(group, levels = c("CC", "BPD", "AD")),
+    Total = BEH + MRI + WEB
+  ) %>%
+  arrange(factor(Role, levels = c("Investor", "Trustee")), Group) %>%
+  transmute(
+    Role,
+    Group,
+    `In-person behavioural (BEH)` = BEH,
+    `MRI` = MRI,
+    `Online (WEB)` = WEB,
+    Total
+  )
+
+stopifnot(nrow(type_by_group) == 6L, sum(type_by_group$Total) == 1324L)
+
+# --- Investor LMM: unadjusted on type-complete sample, then type-adjusted ---
+inv_admin_base_fit <- fit_with_retry(
+  formula = best_model_entry$formula,
+  data = inv_admin_dat,
+  label = "Investor admin-mode base (REML)",
+  REML_flag = TRUE
+)
+if (is.null(inv_admin_base_fit)) {
+  inv_admin_base_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = best_model_entry$formula,
+      data = inv_admin_dat,
+      label = "Investor admin-mode base fallback"
+    )
+  )
+}
+
+inv_admin_adj_fit <- fit_with_retry(
+  formula = update(best_model_entry$formula, . ~ . + type),
+  data = inv_admin_dat,
+  label = "Investor admin-mode adjusted (REML)",
+  REML_flag = TRUE
+)
+if (is.null(inv_admin_adj_fit)) {
+  inv_admin_adj_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = update(best_model_entry$formula, . ~ . + type),
+      data = inv_admin_dat,
+      label = "Investor admin-mode adjusted fallback"
+    )
+  )
+}
+
+investor_admin_table <- bind_rows(
+  extract_lmm_term(
+    inv_admin_base_fit$fit,
+    "groupBPD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Unadjusted (type-complete)",
+    effect_label = "BPD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_admin_base_fit$fit,
+    "groupAD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Unadjusted (type-complete)",
+    effect_label = "AD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_admin_adj_fit$fit,
+    "groupBPD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Admin-mode adjusted",
+    effect_label = "BPD x lagged net return"
+  ),
+  extract_lmm_term(
+    inv_admin_adj_fit$fit,
+    "groupAD:lag_net_return_c",
+    analysis = "Investor investment LMM",
+    model_label = "Admin-mode adjusted",
+    effect_label = "AD x lagged net return"
+  )
+)
+
+# --- Trustee LMM: unadjusted on type-complete sample, then type-adjusted ---
+trust_admin_base_fit <- fit_with_retry(
+  formula = trust_best_entry$formula,
+  data = trust_admin_dat,
+  label = "Trustee admin-mode base (REML)",
+  REML_flag = TRUE
+)
+if (is.null(trust_admin_base_fit)) {
+  trust_admin_base_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = trust_best_entry$formula,
+      data = trust_admin_dat,
+      label = "Trustee admin-mode base fallback"
+    )
+  )
+}
+
+trust_admin_adj_fit <- fit_with_retry(
+  formula = update(trust_best_entry$formula, . ~ . + type),
+  data = trust_admin_dat,
+  label = "Trustee admin-mode adjusted (REML)",
+  REML_flag = TRUE
+)
+if (is.null(trust_admin_adj_fit)) {
+  trust_admin_adj_fit <- list(
+    fit = fit_sensitivity_lmer(
+      formula = update(trust_best_entry$formula, . ~ . + type),
+      data = trust_admin_dat,
+      label = "Trustee admin-mode adjusted fallback"
+    )
+  )
+}
+
+trustee_admin_table <- bind_rows(
+  extract_group_contrasts(
+    trust_admin_base_fit$fit,
+    analysis = "Trustee return LMM",
+    model_label = "Unadjusted (type-complete)",
+    at_list = list(round_c = 0, investment_c = 0)
+  ),
+  extract_group_contrasts(
+    trust_admin_adj_fit$fit,
+    analysis = "Trustee return LMM",
+    model_label = "Admin-mode adjusted",
+    at_list = list(round_c = 0, investment_c = 0)
+  )
+)
+
+# --- Trustee tactical GLMMs ---
+tactical_admin_table <- bind_rows(
+  fit_trustee_tactical_sens(
+    trustee_coax_admin,
+    response = "trustee_coaxing_event",
+    outcome_label = "Coaxing",
+    model_label = "Unadjusted (type-complete)"
+  ),
+  fit_trustee_tactical_sens(
+    trustee_coax_admin,
+    response = "trustee_coaxing_event",
+    outcome_label = "Coaxing",
+    model_label = "Admin-mode adjusted",
+    extra_terms = "type"
+  ),
+  fit_trustee_tactical_sens(
+    trustee_encour_admin,
+    response = "trustee_encouragement_event",
+    outcome_label = "Encouragement",
+    model_label = "Unadjusted (type-complete)"
+  ),
+  fit_trustee_tactical_sens(
+    trustee_encour_admin,
+    response = "trustee_encouragement_event",
+    outcome_label = "Encouragement",
+    model_label = "Admin-mode adjusted",
+    extra_terms = "type"
+  )
+)
+
+# Format inline text
+primary_admin_table <- bind_rows(investor_admin_table, trustee_admin_table)
+
+inv_bpd_admin_base_text <- fmt_sens_term(
+  get_sens_row(investor_admin_table, Model == "Unadjusted (type-complete)", Effect == "BPD x lagged net return")
+)
+inv_bpd_admin_adj_text <- fmt_sens_term(
+  get_sens_row(investor_admin_table, Model == "Admin-mode adjusted", Effect == "BPD x lagged net return")
+)
+trust_ad_admin_base_text <- fmt_sens_term(
+  get_sens_row(trustee_admin_table, Model == "Unadjusted (type-complete)", Effect == "AD vs CC")
+)
+trust_ad_admin_adj_text <- fmt_sens_term(
+  get_sens_row(trustee_admin_table, Model == "Admin-mode adjusted", Effect == "AD vs CC")
+)
+encour_ad_admin_base_text <- fmt_sens_term(
+  get_sens_row(tactical_admin_table, Outcome == "Encouragement", Model == "Unadjusted (type-complete)", Contrast == "AD vs CC"),
+  est_col = "Odds Ratio",
+  prefix = "OR = "
+)
+encour_ad_admin_adj_text <- fmt_sens_term(
+  get_sens_row(tactical_admin_table, Outcome == "Encouragement", Model == "Admin-mode adjusted", Contrast == "AD vs CC"),
+  est_col = "Odds Ratio",
+  prefix = "OR = "
+)
+
+options(contrasts = admin_old_contrasts)
+```
+
+The investor BPD attenuation of sensitivity to lagged returns was stable on the type-complete sample (`r inv_bpd_admin_base_text`) and after adjusting for administration mode (`r inv_bpd_admin_adj_text`). The trustee AD vs CC contrast remained positive before (`r trust_ad_admin_base_text`) and after mode adjustment (`r trust_ad_admin_adj_text`). For encouragement, the AD vs CC contrast was `r encour_ad_admin_base_text` before and `r encour_ad_admin_adj_text` after mode adjustment.
+
+```{r supp-admin-sensitivity-counts, include=TRUE}
+admin_sens_counts %>%
+  supp_apa(
+    caption = "Sample sizes for administration-mode sensitivity analyses",
+    label = "supp-admin-sensitivity-counts"
+  )
+```
+
+```{r supp-admin-type-distribution, include=TRUE}
+type_by_group %>%
+  supp_apa(
+    caption = "Administration mode by game role and diagnostic group",
+    label = "supp-admin-type-distribution",
+    note = paste(
+      "BEH denotes in-person behavioural testing; MRI denotes testing",
+      "during MRI scanning; WEB denotes online testing. Counts are",
+      "participants in the analysed sample."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-admin-sensitivity-primary, include=TRUE}
+primary_admin_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = "Diagnosis-relevant focal effects from administration-mode sensitivity analyses for the primary LMMs. Raw and Holm-adjusted p-values are both shown for contrast-based trustee effects.",
+    label = "supp-admin-sensitivity-primary"
+  )
+```
+
+```{r supp-admin-sensitivity-tactical, include=TRUE}
+tactical_admin_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = "Administration-mode sensitivity analyses for trustee tactical contrasts (raw and Holm-adjusted p-values shown)",
+    label = "supp-admin-sensitivity-tactical"
+  )
+```
+
+### Hidden-State Sensitivity to Administration Mode and Demographics
+
+We also examined whether the central AD--BPD trustee hidden-state findings persisted when the comparison was restricted to the administration mode shared by both groups and when age and gender were included as covariates. These were post-estimation sensitivity analyses: hidden states were obtained from the validated five-state model fitted to the full trustee sample, after which probability-weighted cooperative-state occupancy, decoded transition outcomes, and model-implied long-run cooperation were compared in the restricted or adjusted samples. Thus, the online-only analyses address whether the observed administration-mode difference alone accounts for the second-stage group contrasts; they do not remove differences in recruitment or diagnostic ascertainment.
+
+For long-run cooperation, we first analysed all online trustees (*n* = `r trustee_long_run_sens_n[["online_only"]]`). We then analysed the online participants with complete age and gender data (*n* = `r trustee_long_run_sens_n[["online_complete_case"]]`), both before and after demographic adjustment. Using the same participants for these two analyses separated the effect of adjustment from the effect of excluding participants with missing demographic data. An additional demographic-adjusted analysis included participants from all testing settings with complete demographic data (*n* = `r trustee_long_run_sens_n[["all_modes_age_gender_adjusted"]]`; Table \@ref(tab:supp-trustee-long-run-covariate-contrasts)).
+
+The five-state definitions, state-specific return distributions, and posterior state probabilities remained fixed at their full-sample estimates. Transition models were re-estimated within each analysis sample, including diagnosis, investment, and their interaction; adjusted models additionally included age and gender. Adjusted predictions at investments of 5, 10, and 15 tokens used the full sample's observed mean age. Gender-specific long-run cooperative-state probabilities were averaged using the analysis sample's pooled gender proportions, with identical weights across diagnostic groups.
+
+Each analysis used `r scales::comma(trustee_long_run_sens_boot_n)` successful transition-bootstrap samples, percentile 95% confidence intervals, and two-sided bootstrap tests, following Section S1.3. Holm correction covered nine comparisons per analysis: three diagnostic-group pairs at three investment levels.
+
+```{r supp-hidden-state-covariate-sensitivity-setup, include=FALSE}
+hidden_sens_dir <- file.path(
+  "results", "HMM", "corrected_submission",
+  "covariate_sensitivity_2026-07-29_v2"
+)
+
+hidden_occupancy_sens <- readr::read_csv(
+  file.path(
+    hidden_sens_dir,
+    "probability_weighted_cooperative_occupancy_sensitivity.csv"
+  ),
+  show_col_types = FALSE
+)
+hidden_transition_sens <- readr::read_csv(
+  file.path(hidden_sens_dir, "decoded_transition_sensitivity_contrasts.csv"),
+  show_col_types = FALSE
+)
+hidden_transition_status <- readr::read_csv(
+  file.path(hidden_sens_dir, "decoded_transition_sensitivity_status.csv"),
+  show_col_types = FALSE
+)
+hidden_sens_manifest <- readr::read_csv(
+  file.path(hidden_sens_dir, "RUN_MANIFEST.csv"),
+  show_col_types = FALSE
+)
+
+hidden_manifest_values <- stats::setNames(
+  hidden_sens_manifest$value,
+  hidden_sens_manifest$field
+)
+stopifnot(
+  identical(hidden_manifest_values[["technical_checks_passed"]], "TRUE"),
+  identical(hidden_manifest_values[["selected_state_count"]], "5"),
+  identical(
+    hidden_manifest_values[["behavioral_data_sha256"]],
+    digest::digest(
+      file = "Data/full_RTG_data.csv",
+      algo = "sha256"
+    )
+  ),
+  identical(
+    hidden_manifest_values[["demographics_data_sha256"]],
+    digest::digest(file = "Data/demographics.csv", algo = "sha256")
+  )
+)
+
+hidden_analysis_labels <- c(
+  online_only = "Online, all available",
+  online_complete_case = "Online, complete cases",
+  online_age_gender_adjusted = "Online, age/gender adjusted",
+  all_modes_age_gender_adjusted = "All modes, age/gender adjusted"
+)
+hidden_analysis_order <- unname(hidden_analysis_labels)
+
+trustee_mode_subjects <- clean_dat %>%
+  filter(role == "trustee") %>%
+  distinct(subject_ID, group, type) %>%
+  left_join(
+    demo_complete %>% select(subject_ID) %>% mutate(demo_complete = TRUE),
+    by = "subject_ID"
+  ) %>%
+  mutate(demo_complete = tidyr::replace_na(demo_complete, FALSE))
+
+hidden_sample_counts <- bind_rows(
+  trustee_mode_subjects %>%
+    filter(type == "WEB") %>%
+    count(group) %>%
+    mutate(sensitivity = "online_only"),
+  trustee_mode_subjects %>%
+    filter(type == "WEB", demo_complete) %>%
+    count(group) %>%
+    mutate(sensitivity = "online_complete_case"),
+  trustee_mode_subjects %>%
+    filter(type == "WEB", demo_complete) %>%
+    count(group) %>%
+    mutate(sensitivity = "online_age_gender_adjusted"),
+  trustee_mode_subjects %>%
+    filter(demo_complete) %>%
+    count(group) %>%
+    mutate(sensitivity = "all_modes_age_gender_adjusted")
+) %>%
+  mutate(group = as.character(group)) %>%
+  tidyr::pivot_wider(names_from = group, values_from = n, values_fill = 0) %>%
+  transmute(
+    sensitivity,
+    `N (AD/BPD/CC)` = paste(AD, BPD, CC, sep = "/")
+  )
+
+relevant_transition_status <- hidden_transition_status %>%
+  filter(
+    event == "entry_from_clearly_low_return",
+    sensitivity %in% names(hidden_analysis_labels)
+  )
+stopifnot(
+  nrow(relevant_transition_status) == 4L,
+  all(relevant_transition_status$status == "ok"),
+  all(!relevant_transition_status$singular)
+)
+
+hidden_occupancy_table <- hidden_occupancy_sens %>%
+  filter(
+    contrast == "BPD - AD",
+    sensitivity %in% names(hidden_analysis_labels)
+  ) %>%
+  left_join(hidden_sample_counts, by = "sensitivity") %>%
+  mutate(
+    Analysis = unname(hidden_analysis_labels[sensitivity]),
+    Analysis = factor(Analysis, levels = hidden_analysis_order),
+    `AD - BPD (percentage points)` = scales::number(
+      -100 * difference,
+      accuracy = 0.1
+    ),
+    `95% CI` = paste0(
+      "[",
+      scales::number(-100 * upper, accuracy = 0.1),
+      ", ",
+      scales::number(-100 * lower, accuracy = 0.1),
+      "]"
+    ),
+    `p-value` = p_raw,
+    `Holm-adjusted p-value` = p_holm
+  ) %>%
+  arrange(Analysis) %>%
+  transmute(
+    Analysis,
+    `N (AD/BPD/CC)`,
+    `AD - BPD (percentage points)`,
+    `95% CI`,
+    `p-value`,
+    `Holm-adjusted p-value`
+  )
+
+hidden_repair_table <- hidden_transition_sens %>%
+  filter(
+    event == "entry_from_clearly_low_return",
+    contrast == "BPD - AD",
+    sensitivity %in% names(hidden_analysis_labels)
+  ) %>%
+  mutate(
+    Analysis = unname(hidden_analysis_labels[sensitivity]),
+    Analysis = factor(Analysis, levels = hidden_analysis_order),
+    `Partner investment` = investment,
+    `AD vs BPD odds ratio` = scales::number(
+      1 / odds_ratio,
+      accuracy = 0.01
+    ),
+    `95% CI` = paste0(
+      "[",
+      scales::number(1 / upper_odds_ratio, accuracy = 0.01),
+      ", ",
+      scales::number(1 / lower_odds_ratio, accuracy = 0.01),
+      "]"
+    ),
+    `p-value` = p_raw,
+    `Holm-adjusted p-value` = p_holm_within_investment
+  ) %>%
+  arrange(Analysis, `Partner investment`) %>%
+  transmute(
+    Analysis,
+    `Partner investment`,
+    `AD vs BPD odds ratio`,
+    `95% CI`,
+    `p-value`,
+    `Holm-adjusted p-value`
+  )
+
+stopifnot(
+  nrow(hidden_occupancy_table) == 4L,
+  nrow(hidden_repair_table) == 12L,
+  !anyNA(hidden_occupancy_table),
+  !anyNA(hidden_repair_table)
+)
+
+online_occ <- hidden_occupancy_table %>%
+  filter(Analysis == "Online, all available")
+online_adj_occ <- hidden_occupancy_table %>%
+  filter(Analysis == "Online, age/gender adjusted")
+```
+
+The AD--BPD difference persisted when analysis was restricted to online trustees. AD trustees had `r online_occ[["AD - BPD (percentage points)"]]` percentage points greater probability-weighted cooperative-state occupancy than BPD trustees (95% CI `r online_occ[["95% CI"]]`; Holm-adjusted *p* `r format_pval_clause(online_occ[["Holm-adjusted p-value"]])`). On the online subset with complete demographic data, the age- and gender-adjusted difference was `r online_adj_occ[["AD - BPD (percentage points)"]]` percentage points (95% CI `r online_adj_occ[["95% CI"]]`; Holm-adjusted *p* `r format_pval_clause(online_adj_occ[["Holm-adjusted p-value"]])`). The corresponding AD advantage in returning from the clearly low-return state was also present at partner investments of 5, 10, and 15 tokens in every sensitivity analysis (Table \@ref(tab:supp-hidden-state-repair-sensitivity)).
+
+AD trustees showed greater model-implied long-run cooperation than BPD trustees at all three investment levels among online participants and in the matched online sample before and after demographic adjustment (all Holm-adjusted *p* $\leq$ `r format_pval(trustee_long_run_sens_online_p_max, digits = 4)`; Table \@ref(tab:supp-trustee-long-run-covariate-contrasts)). At 10 tokens, the difference in the matched online sample was `r trustee_percentage_points(trustee_long_run_sens_matched_10$point_difference)` percentage points (95% CI [`r trustee_percentage_points(trustee_long_run_sens_matched_10$lower)`, `r trustee_percentage_points(trustee_long_run_sens_matched_10$upper)`]) before adjustment and `r trustee_percentage_points(trustee_long_run_sens_adjusted_10$point_difference)` points (95% CI [`r trustee_percentage_points(trustee_long_run_sens_adjusted_10$lower)`, `r trustee_percentage_points(trustee_long_run_sens_adjusted_10$upper)`]) after adjustment. The additional analysis across all testing settings also supported the AD–BPD difference at each investment level. No comparison involving controls survived Holm correction in any of these analyses.
+
+```{r supp-hidden-state-occupancy-sensitivity, include=TRUE}
+hidden_occupancy_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = paste(
+      "AD–BPD difference in probability-weighted cooperative-state",
+      "occupancy under administration-mode and demographic sensitivity analyses"
+    ),
+    label = "supp-hidden-state-occupancy-sensitivity",
+    note = paste(
+      "Positive differences indicate greater cooperative-state occupancy",
+      "in AD. Complete cases had non-missing age and binary gender data.",
+      "Confidence intervals are ordinary, unadjusted 95% model-based",
+      "intervals. Raw p values are from t tests; Holm-adjusted p values",
+      "correct the three group comparisons within each analysis."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-hidden-state-repair-sensitivity, include=TRUE}
+hidden_repair_table %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = paste(
+      "AD–BPD contrasts for returning to cooperation from the clearly",
+      "low-return state under administration-mode and demographic",
+      "sensitivity analyses"
+    ),
+    label = "supp-hidden-state-repair-sensitivity",
+    note = paste(
+      "Odds ratios greater than 1 indicate that AD trustees were more",
+      "likely than BPD trustees to return to a cooperative state.",
+      "Results are from logistic mixed-effects models with a",
+      "participant-specific random intercept. Hidden states were obtained",
+      "from the validated full-sample five-state model. Confidence",
+      "intervals are ordinary, unadjusted 95% model-based intervals.",
+      "Raw p values are from Wald z tests; Holm-adjusted p values correct",
+      "the three group comparisons within each analysis and partner-",
+      "investment level."
+    ),
+    font_size = 7
+  )
+```
+
+### Retention and Return to Cooperation in Most-Likely-State Trustee Transitions
+
+```{r supp-trustee-decoded-retention-entry, include=TRUE}
+trustee_decoded_reentry_table %>%
+  supp_apa(
+    caption = paste(
+      "Pairwise diagnostic-group contrasts for remaining in cooperative",
+      "states and for returning to cooperation separately from",
+      "exploitative State 1 and neutral State 2."
+    ),
+    label = "supp-trustee-decoded-retention-entry",
+    note = paste(
+      "Odds ratios greater than 1 indicate that the first group was more",
+      "likely to remain in or enter cooperative states. Results are from",
+      "logistic mixed-effects models with a participant-specific random",
+      "intercept. Confidence intervals are ordinary, unadjusted 95%",
+      "model-based intervals. Raw p values are from Wald z tests;",
+      "Holm-adjusted p values correct the three group comparisons within",
+      "each outcome and partner-investment level."
+    ),
+    font_size = 8
+  )
+```
+
+### Destination-Specific Transitions from Cooperative States
+
+```{r supp-trustee-decoded-destinations, include=TRUE}
+trustee_decoded_destination_table %>%
+  supp_apa(
+    caption = paste(
+      "Pairwise diagnostic-group contrasts for transitions from",
+      "cooperative states to State 1 or State 2."
+    ),
+    label = "supp-trustee-decoded-destinations",
+    note = paste(
+      "State 1 represents clearly exploitative behaviour; State 2 is",
+      "neutral and approximately investor-break-even. Odds ratios greater",
+      "than 1",
+      "indicate that the first group was more likely to enter the",
+      "destination state. Results are from logistic mixed-effects models",
+      "with a participant-specific random intercept. Confidence intervals",
+      "are ordinary, unadjusted 95% model-based intervals. Raw p values",
+      "are from Wald z tests; Holm-adjusted p values correct the three",
+      "group comparisons within each outcome and partner-investment level."
+    ),
+    font_size = 8
+  )
+```
+
+### Payoff ANOVAs
+
+```{r supp-trustee-payoff, include=TRUE}
+if (exists("trustee_anova_table")) {
+  trustee_anova_table %>%
+    as_tibble() %>%
+    format_p_cols() %>%
+    supp_apa(caption = "ANOVA results: trustee total payoffs by group.",
+             label = "supp-trustee-payoff")
+}
+```
+
+```{r supp-investor-payoff, include=TRUE}
+if (exists("investor_anova_table")) {
+  investor_anova_table %>%
+    as_tibble() %>%
+    format_p_cols() %>%
+    supp_apa(caption = "ANOVA results: investor total payoffs by group.",
+             label = "supp-investor-payoff")
+}
+```
+
+### HMM Model Comparison Tables
+
+```{r supp-trustee-hmm-models, include=TRUE}
+selected_row_trustee <- which(
+  trustee_model_comparison_display$Selected == "Yes"
+)
+stopifnot(length(selected_row_trustee) == 1L)
+trustee_model_comparison_supp_display <-
+  trustee_model_comparison_display %>%
+  dplyr::select(-Selected)
+ft_supp_trustee <- trustee_model_comparison_supp_display %>%
+  supp_apa(
+    caption = trustee_model_comparison_caption,
+    label = "supp-trustee-hmm-models",
+    note = trustee_model_comparison_note,
+    font_size = 6
+  ) %>%
+  flextable::width(j = "States", width = 0.35) %>%
+  flextable::width(j = "Transition predictors", width = 1.35) %>%
+  flextable::width(j = "LL", width = 0.65) %>%
+  flextable::width(j = "k", width = 0.28) %>%
+  flextable::width(j = "AIC", width = 0.62) %>%
+  flextable::width(j = "BIC (trials)", width = 0.68) %>%
+  flextable::width(j = "BIC (participants)", width = 0.75) %>%
+  flextable::width(j = "LR statistic", width = 0.55) %>%
+  flextable::width(j = "LR df", width = 0.35) %>%
+  flextable::width(j = "LR p", width = 0.42) %>%
+  supp_fit()
+ft_supp_trustee <- ft_supp_trustee %>%
+  flextable::bold(i = selected_row_trustee) %>%
+  flextable::bg(i = selected_row_trustee, bg = "#E2F0D9")
+ft_supp_trustee
+```
+
+```{=latex}
+\clearpage
+```
+
+```{r supp-investor-hmm-models, include=TRUE}
+selected_row_supp <- which(
+  inv_model_comparison$Model == best_model_type &
+    inv_model_comparison$nstate == best_nstate
+)
+stopifnot(length(selected_row_supp) == 1L)
+
+investor_model_comparison_note <- paste0(
+  "The highlighted row is the selected model. BIC selected ",
+  best_nstate,
+  " states within the group-dependent model family. At ",
+  best_nstate,
+  " states, allowing transitions to differ between BPD and CC improved ",
+  "fit over the diagnosis-free model; likelihood-ratio statistic (",
+  investor_selected_lrt$degrees_of_freedom[[1]],
+  " df) = ",
+  scales::number(
+    investor_selected_lrt$statistic[[1]],
+    accuracy = 0.01
+  ),
+  ", p ",
+  format_pval_clause(investor_selected_lrt$p_value[[1]]),
+  ". BIC was calculated from ",
+  scales::comma(nrow(investor_hmm_dat)),
+  " trial rows."
+)
+
+ft_supp_investor <- inv_model_comparison %>%
+  mutate_if(is.numeric, ~ format(.x, digits = 4, nsmall = 0, big.mark = ",")) %>%
+  format_p_cols() %>%
+  supp_apa(
+    caption = "Model Comparison for Investor Hidden Markov Models",
+    label = "supp-investor-hmm-models",
+    note = investor_model_comparison_note,
+    font_size = 7
+  )
+
+ft_supp_investor <- ft_supp_investor %>%
+  flextable::bold(i = selected_row_supp) %>%
+  flextable::bg(i = selected_row_supp, bg = "#E8F4F8")
+ft_supp_investor
+```
+
+### Investor State Occupancy and Response to Net Earnings
+
+```{r supp-investor-hmm-results, include=TRUE}
+investor_supplement_result_row <- function(
+    model_label, state_analysis) {
+  highest_state <- state_analysis$occupancy_contrasts %>%
+    dplyr::slice_max(
+      expected_investment,
+      n = 1,
+      with_ties = FALSE
+    )
+  feedback <- state_analysis$feedback_contrast
+  stopifnot(nrow(highest_state) == 1L, nrow(feedback) == 1L)
+
+  tibble::tibble(
+    Model = model_label,
+    `Highest-state mean` = paste0(
+      scales::number(
+        highest_state$expected_investment[[1]],
+        accuracy = 0.01
+      ),
+      " tokens"
+    ),
+    `Highest-state occupancy` = paste0(
+      scales::number(
+        100 * highest_state$cc_minus_bpd[[1]],
+        accuracy = 0.1
+      ),
+      " [",
+      scales::number(
+        100 * highest_state$lower_ci[[1]],
+        accuracy = 0.1
+      ),
+      ", ",
+      scales::number(
+        100 * highest_state$upper_ci[[1]],
+        accuracy = 0.1
+      ),
+      "], p ",
+      format_pval_clause(highest_state$p_holm[[1]])
+    ),
+    `Response to net earnings` = paste0(
+      scales::number(
+        feedback$estimate[[1]],
+        accuracy = 0.001
+      ),
+      " [",
+      scales::number(
+        feedback$lower_ci[[1]],
+        accuracy = 0.001
+      ),
+      ", ",
+      scales::number(
+        feedback$upper_ci[[1]],
+        accuracy = 0.001
+      ),
+      "], p ",
+      format_pval_clause(feedback$p.value[[1]])
+    )
+  )
+}
+
+investor_hmm_results_display <- dplyr::bind_rows(
+  investor_supplement_result_row(
+    paste0(best_nstate, "-state group-dependent (selected)"),
+    investor_primary_state_analysis
+  ),
+  investor_supplement_result_row(
+    "Four-state group-dependent",
+    investor_sensitivity_state_analysis$four_state_group
+  ),
+  investor_supplement_result_row(
+    "Six-state group-dependent",
+    investor_sensitivity_state_analysis$six_state_group
+  ),
+  investor_supplement_result_row(
+    "Five-state diagnosis-free",
+    investor_sensitivity_state_analysis$five_state_diagnosis_free
+  )
+)
+stopifnot(
+  nrow(investor_hmm_results_display) == 4L,
+  !anyNA(investor_hmm_results_display)
+)
+
+investor_hmm_results_table <- investor_hmm_results_display %>%
+  supp_apa(
+    caption = paste(
+      "Investor hidden-state results and sensitivity analyses."
+    ),
+    label = "supp-investor-hmm-results",
+    note = paste(
+      paste(
+        "Highest-state occupancy is the CC minus BPD difference in",
+        "percentage points, with a 95% confidence interval and a p value",
+        "adjusted across the states in that model."
+      ),
+      paste(
+        "Response to net earnings is the CC minus BPD difference in the",
+        "change in next-state mean investment per token earned, with a",
+        "95% confidence interval and an unadjusted p value."
+      ),
+      sep = "\n"
+    ),
+    font_size = 7
+  ) %>%
+  flextable::width(j = "Model", width = 1.65) %>%
+  flextable::width(j = "Highest-state mean", width = 1.05) %>%
+  flextable::width(j = "Highest-state occupancy", width = 2.05) %>%
+  flextable::width(j = "Response to net earnings", width = 2.05) %>%
+  supp_fit()
+
+investor_hmm_results_table
+```
+
+### Most-Likely-State Occupancy
+
+```{r supp-trustee-state-occupancy-omnibus, include=TRUE}
+trustee_state_occupancy_omnibus_display %>%
+  supp_apa(
+    caption = paste(
+      "Mean most-likely-state occupancy of each trustee latent state by",
+      "diagnostic group, with omnibus tests of group differences."
+    ),
+    label = "supp-trustee-state-occupancy-omnibus",
+    note = paste(
+      "Each round was assigned to the state with the highest posterior",
+      "probability. A participant's occupancy was the proportion of their",
+      "ten rounds assigned to each state.",
+      "Omnibus p values are Holm-adjusted across the five states."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-trustee-state-occupancy-pairwise, include=TRUE}
+trustee_state_occupancy_pairwise_display %>%
+  supp_apa(
+    caption = paste(
+      "Pairwise diagnostic-group differences in most-likely-state",
+      "occupancy for each trustee latent state."
+    ),
+    label = "supp-trustee-state-occupancy-pairwise",
+    note = paste(
+      "Differences and 95% confidence intervals are expressed in",
+      "percentage points; positive values indicate greater occupancy in",
+      "the first group. P values are Holm-adjusted across the three group",
+      "comparisons within each state."
+    ),
+    font_size = 8
+  )
+```
+
+### Fitted Trustee Cooperation Dynamics
+
+```{r supp-trustee-primary-levels, include=TRUE}
+trustee_primary_levels_display %>%
+  supp_apa(
+    caption = paste0(
+      "Fitted probabilities for the primary trustee cooperation measures",
+      " in the ", trustee_selected_state_word, "-state model."
+    ),
+    label = "supp-trustee-primary-levels",
+    note = paste(
+      "Point estimates were calculated directly from the fitted hidden",
+      "Markov model. Intervals are 95% percentile intervals from the",
+      "model-conditional transition bootstrap."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-trustee-primary-contrasts, include=TRUE}
+trustee_primary_contrasts_display %>%
+  supp_apa(
+    caption = paste(
+      "Pairwise diagnostic-group differences in the primary trustee",
+      "cooperation measures."
+    ),
+    label = "supp-trustee-primary-contrasts",
+    note = paste(
+      "Differences and 95% bootstrap intervals are expressed in",
+      "percentage points; positive values indicate a higher probability",
+      "in the first group. Holm adjustments used 18 retention-and-repair",
+      "comparisons, 18 comparisons across exits to States 1 and 2, and",
+      "nine long-run cooperation comparisons."
+    ),
+    font_size = 7
+  )
+```
+
+### Sensitivity to the Number of Trustee States
+
+To examine whether the findings depended on the number of hidden states, we repeated the occupancy and transition analyses using neighbouring four- and six-state diagnosis-dependent models. In each model, the state closest to returning one third of the tripled investment was classified as neutral. Lower-return states were classified as exploitative and higher-return states as cooperative. This defined States 3–4 as cooperative in the four-state model and States 4–6 in the six-state model.
+
+The AD–BPD difference was the most consistent result. AD trustees occupied cooperative states more often than BPD trustees in both alternative models and showed greater long-run cooperation at every investment level. Repair after exploitation was also higher in AD than BPD throughout, although the difference at the lowest investment did not remain reliable after adjustment in the six-state model.
+
+The BPD–CC transition pattern depended on the number of states. In the six-state model, BPD trustees showed lower cooperative retention than controls at 10 tokens after adjustment; the differences at 5 and 15 tokens did not remain reliable. The four-state model showed no reliable BPD retention deficit and instead identified lower BPD repair at all three investment levels. Thus, the AD–BPD occupancy and long-run cooperation differences were stable, whereas whether BPD–CC differences appeared in cooperative maintenance or repair depended on how finely behaviour was divided into states.
+
+AD trustees showed higher repair than controls at 5 and 10 tokens in the four-state model and at 15 tokens in the six-state model; the remaining AD–CC repair comparisons did not remain reliable after adjustment.
+
+```{r supp-trustee-state-count-definitions, include=TRUE}
+trustee_sensitivity_state_definition_display %>%
+  supp_apa(
+    caption = paste(
+      "Return profiles and cooperative-state definitions in the",
+      "neighbouring trustee models."
+    ),
+    label = "supp-trustee-state-count-definitions",
+    note = paste(
+      "Fitted means are percentages of the tripled investment returned.",
+      "The state closest to one third was classified as neutral; states",
+      "above it were classified as cooperative and states below it as",
+      "exploitative."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-trustee-state-count-claims, include=TRUE}
+trustee_sensitivity_compact_table <-
+  trustee_sensitivity_compact_display %>%
+  supp_apa(
+    caption = paste(
+      "Claim-focused comparisons in the neighbouring trustee models."
+    ),
+    label = "supp-trustee-state-count-claims",
+    note = paste(
+      paste(
+        "Cells show the difference between the first and second groups in",
+        "percentage points [95% confidence interval], followed by the",
+        "Holm-adjusted p value. Transition intervals and tests use",
+        "10,000 successful bootstrap samples per model."
+      ),
+      paste(
+        "Occupancy p values were adjusted across three group comparisons",
+        "within each state count. Repair and retention p values were adjusted",
+        "together across 18 comparisons; long-run cooperation p values were",
+        "adjusted across nine comparisons."
+      ),
+      sep = "\n"
+    ),
+    font_size = 7
+  )
+
+trustee_sensitivity_compact_table <- trustee_sensitivity_compact_table %>%
+  flextable::width(j = "Measure", width = 1.35) %>%
+  flextable::width(j = "Contrast", width = 0.75) %>%
+  flextable::width(j = "Investment", width = 0.60) %>%
+  flextable::width(j = "Four states", width = 1.70) %>%
+  flextable::width(j = "Six states", width = 1.70) %>%
+  supp_fit()
+
+trustee_sensitivity_compact_table
+```
+
+### Movement between Neutral State 2 and Cooperation
+
+AD trustees were more likely than CC to move from neutral State 2 into cooperation at investments of 5, 10, and 15 tokens (largest Holm-adjusted *p* `r format_pval_clause(trustee_neutral_entry_ad_cc_p_max)`) and more likely than BPD at 10 and 15 tokens (largest Holm-adjusted *p* `r format_pval_clause(trustee_neutral_entry_ad_bpd_10_15_p_max)`). The AD–BPD comparison at 5 tokens and all BPD–CC comparisons did not remain significant after correction.
+
+```{r supp-trustee-secondary-levels, include=TRUE}
+trustee_secondary_levels_display %>%
+  supp_apa(
+    caption = paste(
+      "Fitted probabilities for movement between neutral State 2 and",
+      "cooperative states."
+    ),
+    label = "supp-trustee-secondary-levels",
+    note = paste0(
+      "State 2 is neutral and approximately investor-break-even. Point ",
+      "estimates were calculated from the fitted ", trustee_selected_state_word,
+      "-state hidden Markov model. Intervals are 95% model-conditional ",
+      "bootstrap intervals from 10,000 successful samples."
+    ),
+    font_size = 8
+  )
+```
+
+```{r supp-trustee-secondary-contrasts, include=TRUE}
+ft_supp_secondary_contrasts <- trustee_secondary_contrasts_display %>%
+  supp_apa(
+    caption = paste(
+      "Pairwise diagnostic-group differences in movement between neutral",
+      "State 2 and cooperative states."
+    ),
+    label = "supp-trustee-secondary-contrasts",
+    note = paste(
+      "Source-transition p values are Holm-adjusted across 27 comparisons",
+      "covering retention, repair from State 1, and movement from State 2",
+      "into cooperation. Destination-specific exit p values are adjusted",
+      "across 18 comparisons covering both destination states."
+    ),
+    font_size = 6.5
+  ) %>%
+  flextable::width(j = "Measure", width = 2.10) %>%
+  flextable::width(j = "Partner investment", width = 0.62) %>%
+  flextable::width(j = "Contrast", width = 0.62) %>%
+  flextable::width(
+    j = "Difference (percentage points)",
+    width = 1.15
+  ) %>%
+  flextable::width(j = "95% CI", width = 0.72) %>%
+  flextable::width(j = "Raw p", width = 0.42) %>%
+  flextable::width(j = "Holm-adjusted p", width = 0.58) %>%
+  supp_fit()
+
+ft_supp_secondary_contrasts
+```
+
+### Long-Run Cooperation: Administration-Mode and Demographic Sensitivity
+
+```{r supp-trustee-long-run-covariate-contrasts, include=TRUE}
+trustee_long_run_sens_labels <- c(
+  online_only = "Online, all available",
+  online_complete_case = "Online, complete demographics, unadjusted",
+  online_age_gender_adjusted = "Online, age/gender adjusted",
+  all_modes_age_gender_adjusted = "All settings, age/gender adjusted"
+)
+trustee_long_run_sens_display <- trustee_long_run_sens_contrasts %>%
+  mutate(
+    sensitivity = factor(sensitivity, levels = trustee_long_run_sens_order),
+    contrast = factor(contrast, levels = c("AD-BPD", "AD-CC", "BPD-CC"))
+  ) %>%
+  arrange(sensitivity, investment, contrast) %>%
+  transmute(
+    Analysis = paste0(
+      trustee_long_run_sens_labels[as.character(sensitivity)],
+      " (n = ", trustee_long_run_sens_n[as.character(sensitivity)], ")"
+    ),
+    `Investment (tokens)` = investment,
+    Contrast = gsub("-", "–", as.character(contrast), fixed = TRUE),
+    `Difference (percentage points)` = trustee_percentage_points(point_difference),
+    `95% CI` = paste0(
+      "[", trustee_percentage_points(lower), ", ",
+      trustee_percentage_points(upper), "]"
+    ),
+    `Raw p` = format_pval(p_two_sided, digits = 4),
+    `Holm-adjusted p` = format_pval(p_holm_family, digits = 4)
+  )
+trustee_long_run_sens_matched_status <- trustee_long_run_sens_status %>%
+  filter(sensitivity == "online_complete_case")
+
+ft_supp_long_run_covariate <- trustee_long_run_sens_display %>%
+  supp_apa(
+    caption = paste(
+      "Group differences in model-implied long-run cooperation under",
+      "administration-mode and demographic sensitivity analyses."
+    ),
+    label = "supp-trustee-long-run-covariate-contrasts",
+    note = paste(
+      "AD = affective-symptom group; BPD = borderline personality disorder;",
+      "CC = community controls. Positive differences indicate higher",
+      "long-run cooperation in the first group. Differences and percentile",
+      "95% confidence intervals are in percentage points. Point estimates",
+      "come from the transition models fitted within each analysis sample.",
+      "State definitions, return distributions, and posterior state probabilities",
+      "remain fixed at their full-sample estimates. Complete demographic data",
+      "required valid age and binary gender data. Holm correction covers nine",
+      "comparisons within each analysis.",
+      paste0(
+        "The unadjusted online complete-case analysis required ",
+        scales::comma(trustee_long_run_sens_matched_status$attempted),
+        " attempts to obtain ", scales::comma(trustee_long_run_sens_boot_n),
+        " successful samples because ",
+        trustee_long_run_sens_matched_status$rejected,
+        " refits failed; all other analyses required ",
+        scales::comma(trustee_long_run_sens_boot_n), " attempts."
+      )
+    ),
+    font_size = 8
+  ) %>%
+  flextable::width(j = "Analysis", width = 1.60) %>%
+  flextable::width(j = "Investment (tokens)", width = 0.55) %>%
+  flextable::width(j = "Contrast", width = 0.62) %>%
+  flextable::width(j = "Difference (percentage points)", width = 0.85) %>%
+  flextable::width(j = "95% CI", width = 1.08) %>%
+  flextable::width(j = "Raw p", width = 0.56) %>%
+  flextable::width(j = "Holm-adjusted p", width = 0.65) %>%
+  supp_fit()
+
+ft_supp_long_run_covariate
+```
+
+### Figure S1: Transition Probabilities by Diagnostic Group
+
+```{r supp-transProbsTrustee, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE, fig.height=12, fig.width=10, fig.cap=trustee_full_transition_caption, fig.pos='H'}
+print(trustee_full_transition_plot)
+```
+
+```{=latex}
+\FloatBarrier
+```
+
+## S3. Software and Data Availability
+
+### Software Versions
+
+All analyses were conducted in R version `r as.character(getRversion())`.
+
+Core packages:
+- lme4 v`r as.character(utils::packageVersion("lme4"))`
+- lmerTest v`r as.character(utils::packageVersion("lmerTest"))`
+- depmixS4 v`r as.character(utils::packageVersion("depmixS4"))`
+- emmeans v`r as.character(utils::packageVersion("emmeans"))`
+- ggplot2 v`r as.character(utils::packageVersion("ggplot2"))`
+
+### Data and Code Availability
+
+Analysis code and the code required to reproduce the manuscript will be made available in the project's remote GitHub repository upon publication. De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared.
+
+---

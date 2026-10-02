@@ -1,0 +1,31 @@
+---
+title: "Distinct Reciprocity Phenotypes in Psychiatric Disorders: Adaptation, Maintenance, and Repair Across Repeated Social Exchange"
+author: "Ismail Guennouni^1,2,3^, Tobias Nolte^4,5^, Maarten Speekenbrink^6^, Georgia Koppe^1,2,3^, Stephen Pilling^4,8^, Judy Leibowitz^8^, Read Montague^7^, and Peter Fonagy^4,5^"
+output:
+  bookdown::pdf_document2:
+    number_sections: false
+    toc: false
+bibliography: references.bib
+csl: apa.csl
+link-citations: true
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{placeins}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+  - \AtBeginDocument{\author{Ismail Guennouni\textsuperscript{1,2,3}, Tobias Nolte\textsuperscript{4,5}, Maarten Speekenbrink\textsuperscript{6}\\Georgia Koppe\textsuperscript{1,2,3}, Stephen Pilling\textsuperscript{4,8}, Judy Leibowitz\textsuperscript{8}\\Read Montague\textsuperscript{7}, and Peter Fonagy\textsuperscript{4,5}}}
+---
+
+```{r child="analysis_main.Rmd"}
+```
