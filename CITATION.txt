@@ -1,8 +1,8 @@
 Associated manuscript (submission draft; no publication DOI assigned here):
 Guennouni, Ismail; Nolte, Tobias; Speekenbrink, Maarten; Koppe, Georgia;
 Pilling, Stephen; Leibowitz, Judy; Montague, Read; Fonagy, Peter.
-Beyond Behavioural Averages: Clinical Differences in Trust and Reciprocity Dynamics.
+Beyond Average Behaviour: Trust and Reciprocity Dynamics Reveal Distinct Behavioural Phenotypes.
 
-Code package version: 2026-10-02.
+Code package version: 2026-10-03.
 Repository: https://github.com/ismailg/trust-game-reciprocity-code
-Submission snapshot: submission-v6.
+Submission snapshot: submission-v7.

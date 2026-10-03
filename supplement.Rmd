@@ -45,6 +45,8 @@ invisible(knitr::knit_child("analysis_main.Rmd", quiet = TRUE))
 
 Beyond mean investment amounts and return proportions, we derived behavioural features capturing dynamic reciprocity patterns and strategic adjustment. While these can be summarised as participant-level proportions for descriptive purposes, our primary analysis treated them as binary outcomes in trial-level generalised linear mixed models (GLMMs).
 
+Diagnostic groups were community controls (CC), participants with borderline personality disorder (BPD), and affective-symptom service users (AD).
+
 Descriptive proportions used the opportunity conditions below. Trial-level models additionally applied the stated eligibility conditions to exclude rounds in which the response was impossible. All trial-level models used rounds with the required previous-round information and observed outcomes, excluding the first round.
 
 #### Fair Return Benchmark
@@ -89,14 +91,14 @@ We used this boundary because at 5 tokens the equal-payoff return is 0, whereas 
 
 #### Optimizer Configuration
 
-For the LMM analyses, maximum-likelihood candidate models were fit with retry-based optimizer checks. The primary optimizer was `bobyqa`, with a maximum of 1,000,000 function evaluations; `nloptwrap` was used as a fallback with the same limit when needed. Candidate fits were retained when the optimizer returned convergence code 0 and no `lme4` convergence warning was present. Maximum gradients were logged as diagnostics. Selected LMMs were refit using REML with the same retry procedure for final reporting. Trial-level GLMMs were fit with `bobyqa` using the outcome-specific random-effects structures described below.
+For the linear mixed-effects model (LMM) analyses, maximum-likelihood candidate models were fit with retry-based optimizer checks. The primary optimizer was `bobyqa`, with a maximum of 1,000,000 function evaluations; `nloptwrap` was used as a fallback with the same limit when needed. Candidate fits were retained when the optimizer returned convergence code 0 and no `lme4` convergence warning was present. Maximum gradients were logged as diagnostics. Selected LMMs were refit using restricted maximum likelihood (REML) with the same retry procedure for final reporting. Trial-level GLMMs were fit with `bobyqa` using the outcome-specific random-effects structures described below.
 
 #### Likelihood Ratio Test Procedure
 
 Sequential model comparisons:
 
 1. Fit nested sequence of models
-2. Compare using: $\text{LRT} = -2(\text{logL}_{\text{simpler}} - \text{logL}_{\text{complex}})$
+2. Calculate the likelihood-ratio test (LRT) statistic: $\text{LRT} = -2(\text{logL}_{\text{simpler}} - \text{logL}_{\text{complex}})$
 3. Test statistic follows $\chi^2$ distribution with df = parameter difference
 4. Selection criterion: $p < .05$ to justify additional complexity
 
@@ -114,7 +116,7 @@ We report unstandardised coefficients and confidence intervals, supplemented by 
 
 ### S1.3 Bootstrap Algorithm for Trustee HMM Transition Dynamics
 
-For the trustee HMM, we implemented an approximate, model-conditional transition bootstrap with 10,000 successful draws to quantify uncertainty in retention, repair, transitions involving the neutral state, and long-run cooperation. The selected state structure and emission distributions remained fixed.
+For the trustee hidden Markov model (HMM), we implemented an approximate, model-conditional transition bootstrap with 10,000 successful draws to quantify uncertainty in retention, repair, transitions involving the neutral state, and long-run cooperation. The selected state structure and emission distributions remained fixed.
 
 #### Algorithm Steps
 
@@ -135,7 +137,7 @@ The reported point estimates were calculated directly from the fitted HMM rather
 
 #### Confidence Intervals and Testing
 
-- 95% CI: Percentile method $[q_{0.025}, q_{0.975}]$ of bootstrap distribution
+- 95% confidence interval (CI): Percentile method $[q_{0.025}, q_{0.975}]$ of bootstrap distribution
 - Hypothesis tests: Two-sided bootstrap p-values with a finite-sample correction and Holm correction within each comparison family. Retention and repair from State 1 formed an 18-comparison family for the primary results (Table S29), and long-run cooperation formed a nine-comparison family. For the secondary neutral-state results (Table S33), movement from neutral State 2 into cooperation was adjusted together with retention and repair from State 1, forming a 27-comparison family. Exits to States 1 and 2 were adjusted together across 18 comparisons.
 
 The bootstrap simulated transitions within the fitted five-state model while holding the state structure and emission distributions fixed. The resulting intervals represent uncertainty in the transition model. Separate simulation of each starting-state model omits some covariance across transition blocks, and interval coverage remains unverified. `r trustee_sensitivity_sampling_description`
@@ -215,12 +217,17 @@ investor_analysis %>%
            label = "supp-investor-summary")
 ```
 
+```{=latex}
+\newpage
+```
+
 ### Investor LMM Details
 
 ```{r supp-investor-lmm-aic, include=TRUE}
 aic_tbl %>%
   format_p_cols() %>%
   supp_apa(caption = "Investor LMM model comparison (smaller AIC is better).",
+           note = "AIC = Akaike information criterion.",
            label = "supp-investor-lmm-aic")
 ```
 
@@ -229,7 +236,8 @@ if (exists("lr_tbl") && nrow(lr_tbl) > 0) {
   lr_tbl %>%
     format_p_cols() %>%
     supp_apa(caption = "Likelihood-ratio tests comparing the fit of nested Investor Linear Mixed Models.",
-             label = "supp-investor-lmm-lrt")
+             label = "supp-investor-lmm-lrt",
+             note = "BIC = Bayesian information criterion.")
 } else {
   cat("Likelihood-ratio comparisons unavailable (no nested models converged).")
 }
@@ -888,7 +896,7 @@ tactical_sens_table %>%
 
 ### Administration-Mode Sensitivity Analyses
 
-Data were collected across three administration modes: in-person behavioural testing (BEH), testing during MRI scanning (MRI), and online testing (WEB). Administration mode was unevenly distributed across diagnostic groups and roles. In particular, 528 of 545 AD trustees were tested online, whereas all 16 AD investors were tested in person in the behavioural setting. We therefore report the full role-by-group distribution below and refit the primary LMMs and trustee tactical GLMMs with administration mode (dummy-coded, BEH as reference) as an additive covariate.
+Data were collected across three administration modes: in-person behavioural testing (BEH), testing during magnetic resonance imaging (MRI), and online testing (WEB). Administration mode was unevenly distributed across diagnostic groups and roles. In particular, 528 of 545 AD trustees were tested online, whereas all 16 AD investors were tested in person in the behavioural setting. We therefore report the full role-by-group distribution below and refit the primary LMMs and trustee tactical GLMMs with administration mode (dummy-coded, BEH as reference) as an additive covariate.
 
 ```{r supp-admin-mode-sensitivity, include=FALSE}
 admin_old_contrasts <- getOption("contrasts")
@@ -1460,7 +1468,7 @@ trustee_decoded_destination_table %>%
   )
 ```
 
-### Payoff ANOVAs
+### Payoff Analyses of Variance
 
 ```{r supp-trustee-payoff, include=TRUE}
 if (exists("trustee_anova_table")) {
@@ -1972,6 +1980,6 @@ Core packages:
 
 ### Data and Code Availability
 
-Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v6). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared.
+Analysis code and manuscript sources are available in the [versioned code release](https://github.com/ismailg/trust-game-reciprocity-code/releases/tag/submission-v7). De-identified behavioural data may be shared with researchers upon reasonable request to the corresponding author, subject to approval by the relevant data custodians and applicable ethics and information-governance requirements. Identifiable participant data cannot be shared.
 
 ---
